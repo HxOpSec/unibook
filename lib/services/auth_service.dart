@@ -6,6 +6,10 @@ class AuthService {
 
   final FirebaseAuth _firebaseAuth;
 
+  Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
+
+  User? get currentUser => _firebaseAuth.currentUser;
+
   Future<UserCredential> register(String email, String password) async {
     try {
       return await _firebaseAuth.createUserWithEmailAndPassword(
@@ -15,7 +19,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw Exception(_mapRegisterError(e.code));
     } catch (_) {
-      throw Exception('Не удалось зарегистрироваться. Попробуйте позже.');
+      throw Exception('Ошибка регистрации. Попробуйте позже');
     }
   }
 
@@ -28,97 +32,48 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw Exception(_mapLoginError(e.code));
     } catch (_) {
-      throw Exception('Не удалось выполнить вход. Попробуйте позже.');
+      throw Exception('Ошибка входа. Попробуйте позже');
     }
   }
 
   Future<void> logout() async {
-    try {
-      await _firebaseAuth.signOut();
-    } on FirebaseAuthException catch (e) {
-      throw Exception(_mapCommonError(e.code));
-    } catch (_) {
-      throw Exception('Не удалось выйти из аккаунта. Попробуйте позже.');
-    }
-  }
-
-  User? getCurrentUser() {
-    return _firebaseAuth.currentUser;
+    await _firebaseAuth.signOut();
   }
 
   Future<void> resetPassword(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
-      throw Exception(_mapResetPasswordError(e.code));
-    } catch (_) {
-      throw Exception(
-        'Не удалось отправить письмо для сброса пароля. Попробуйте позже.',
-      );
+      if (e.code == 'network-request-failed') {
+        throw Exception('Нет подключения к интернету');
+      }
+      throw Exception('Не удалось отправить письмо для сброса');
     }
   }
 
   String _mapRegisterError(String code) {
     switch (code) {
       case 'email-already-in-use':
-        return 'Пользователь с таким email уже существует.';
-      case 'invalid-email':
-        return 'Некорректный формат email.';
+        return 'Пользователь с таким email уже существует';
       case 'weak-password':
-        return 'Слишком простой пароль. Используйте более сложный пароль.';
-      case 'operation-not-allowed':
-        return 'Регистрация временно недоступна.';
+        return 'Пароль должен содержать минимум 6 символов';
       case 'network-request-failed':
-        return 'Нет подключения к интернету. Проверьте сеть.';
-      case 'too-many-requests':
-        return 'Слишком много попыток. Попробуйте позже.';
+        return 'Нет подключения к интернету';
       default:
-        return 'Ошибка регистрации. Попробуйте позже.';
+        return 'Ошибка регистрации. Попробуйте позже';
     }
   }
 
   String _mapLoginError(String code) {
     switch (code) {
-      case 'invalid-email':
-        return 'Некорректный формат email.';
-      case 'user-disabled':
-        return 'Этот аккаунт отключён.';
-      case 'user-not-found':
-      case 'wrong-password':
       case 'invalid-credential':
-        return 'Неверный email или пароль.';
-      case 'network-request-failed':
-        return 'Нет подключения к интернету. Проверьте сеть.';
-      case 'too-many-requests':
-        return 'Слишком много попыток входа. Попробуйте позже.';
-      default:
-        return 'Ошибка входа. Попробуйте позже.';
-    }
-  }
-
-  String _mapResetPasswordError(String code) {
-    switch (code) {
-      case 'invalid-email':
-        return 'Некорректный формат email.';
+      case 'wrong-password':
       case 'user-not-found':
-        return 'Пользователь с таким email не найден.';
+        return 'Неверный email или пароль';
       case 'network-request-failed':
-        return 'Нет подключения к интернету. Проверьте сеть.';
-      case 'too-many-requests':
-        return 'Слишком много запросов. Попробуйте позже.';
+        return 'Нет подключения к интернету';
       default:
-        return 'Ошибка отправки письма для сброса пароля.';
-    }
-  }
-
-  String _mapCommonError(String code) {
-    switch (code) {
-      case 'network-request-failed':
-        return 'Нет подключения к интернету. Проверьте сеть.';
-      case 'too-many-requests':
-        return 'Слишком много запросов. Попробуйте позже.';
-      default:
-        return 'Произошла ошибка. Попробуйте позже.';
+        return 'Ошибка входа. Попробуйте позже';
     }
   }
 }

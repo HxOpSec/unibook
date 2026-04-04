@@ -8,8 +8,7 @@ class Validators {
 
   static String? email(String? value) {
     if (requiredField(value) != null) return 'Введите email';
-    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+
-$'.trim());
+    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     if (!regex.hasMatch(value!.trim())) {
       return 'Введите корректный email';
     }
