@@ -140,12 +140,14 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     child: AnimatedBuilder(
                       animation: _shakeController,
                       builder: (context, child) {
+                        const shakeAmplitude = 10.0;
+                        const turnPoint = 0.5;
                         final progress = _shakeController.value;
                         final offset = progress == 0
                             ? 0.0
                             : (1 - progress) *
-                                10 *
-                                (progress < 0.5 ? 1 : -1);
+                                shakeAmplitude *
+                                (progress < turnPoint ? 1 : -1);
                         return Transform.translate(offset: Offset(offset, 0), child: child);
                       },
                       child: Column(

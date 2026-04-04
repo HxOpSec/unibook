@@ -88,6 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final departments = _departments
         .where((d) => d.name.toLowerCase().contains(query))
         .toList();
+    final filteredRecentBooks = _recentBooks.where((book) {
+      if (_searchTerm.trim().isEmpty) return true;
+      return book.title.toLowerCase().contains(query) ||
+          book.author.toLowerCase().contains(query) ||
+          book.subject.toLowerCase().contains(query);
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -226,16 +232,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: _MiniStatCard(title: 'Total Books', value: _stats['books'] ?? 0),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _MiniStatCard(title: 'Total Users', value: _stats['users'] ?? 0),
+                    child: _MiniStatCard(title: 'Всего книг', value: _stats['books'] ?? 0),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _MiniStatCard(
-                      title: 'Departments',
+                      title: 'Пользователей',
+                      value: _stats['users'] ?? 0,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _MiniStatCard(
+                      title: 'Кафедр',
                       value: _stats['departments'] ?? 0,
                     ),
                   ),
@@ -284,37 +293,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             SizedBox(
               height: 200,
-              child: _recentBooks
-                      .where((book) {
-                        if (_searchTerm.trim().isEmpty) return true;
-                        final q = _searchTerm.toLowerCase();
-                        return book.title.toLowerCase().contains(q) ||
-                            book.author.toLowerCase().contains(q) ||
-                            book.subject.toLowerCase().contains(q);
-                      })
-                      .isEmpty
+              child: filteredRecentBooks.isEmpty
                   ? const Center(child: Text('Пока нет новых поступлений'))
                   : ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _recentBooks
-                          .where((book) {
-                            if (_searchTerm.trim().isEmpty) return true;
-                            final q = _searchTerm.toLowerCase();
-                            return book.title.toLowerCase().contains(q) ||
-                                book.author.toLowerCase().contains(q) ||
-                                book.subject.toLowerCase().contains(q);
-                          })
-                          .length,
+                      itemCount: filteredRecentBooks.length,
                       separatorBuilder: (_, __) => const SizedBox(width: 10),
                       itemBuilder: (context, index) {
-                        final filteredRecent = _recentBooks.where((book) {
-                          if (_searchTerm.trim().isEmpty) return true;
-                          final q = _searchTerm.toLowerCase();
-                          return book.title.toLowerCase().contains(q) ||
-                              book.author.toLowerCase().contains(q) ||
-                              book.subject.toLowerCase().contains(q);
-                        }).toList();
-                        final book = filteredRecent[index];
+                        final book = filteredRecentBooks[index];
                         return SizedBox(
                           width: 160,
                           child: InkWell(
