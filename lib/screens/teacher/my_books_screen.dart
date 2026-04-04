@@ -31,10 +31,10 @@ class MyBooksScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.menu_book_outlined, size: 64, color: Colors.grey),
-                  SizedBox(height: 12),
-                  Text('У вас пока нет загруженных книг'),
+                children: [
+                  const Icon(Icons.menu_book_outlined, size: 64, color: Colors.grey),
+                  const SizedBox(height: 12),
+                  const Text('У вас пока нет загруженных книг'),
                 ],
               ),
             );
