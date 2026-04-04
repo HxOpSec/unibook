@@ -107,10 +107,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                         return;
                       }
-                      try {
-                        await context.read<AuthProvider>().clearError();
-                        await context.read<AuthProvider>().logout();
-                      } catch (_) {}
+                      final auth = context.read<AuthProvider>();
+                      final ok = await auth.resetPassword(email);
+                      if (!context.mounted) return;
+                      if (!ok) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(auth.error ?? 'Ошибка'),
+                          ),
+                        );
+                        return;
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           backgroundColor: Colors.green,

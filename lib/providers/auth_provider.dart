@@ -111,6 +111,20 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> resetPassword(String email) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      await _authService.resetPassword(email);
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void clearError() {
     _error = null;
     notifyListeners();
