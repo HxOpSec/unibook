@@ -70,6 +70,10 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _error = null;
     try {
+      if (!kDebugMode) {
+        _error = 'Режим разработчика доступен только в debug-сборке';
+        return false;
+      }
       _isDevMode = true;
       _firebaseUser = null;
       _profileSub?.cancel();

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
@@ -83,6 +84,14 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     Navigator.of(context).pushReplacementNamed(AppRoutes.home);
   }
 
+
+  double _calculateShakeOffset(double progress) {
+    const shakeAmplitude = 10.0;
+    const turnPoint = 0.5;
+    if (progress == 0) return 0;
+    return (1 - progress) * shakeAmplitude * (progress < turnPoint ? 1 : -1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final loading = context.watch<AuthProvider>().isLoading;
@@ -140,14 +149,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     child: AnimatedBuilder(
                       animation: _shakeController,
                       builder: (context, child) {
-                        const shakeAmplitude = 10.0;
-                        const turnPoint = 0.5;
                         final progress = _shakeController.value;
-                        final offset = progress == 0
-                            ? 0.0
-                            : (1 - progress) *
-                                shakeAmplitude *
-                                (progress < turnPoint ? 1 : -1);
+                        final offset = _calculateShakeOffset(progress);
                         return Transform.translate(offset: Offset(offset, 0), child: child);
                       },
                       child: Column(
@@ -312,16 +315,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             ),
                           ),
                           const Spacer(),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: TextButton(
-                              onPressed: loading ? null : _loginAsDeveloper,
-                              child: const Text(
-                                'Войти как разработчик',
-                                style: TextStyle(fontSize: 12),
+                          if (kDebugMode)
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: TextButton(
+                                onPressed: loading ? null : _loginAsDeveloper,
+                                child: const Text(
+                                  'Войти как разработчик',
+                                  style: TextStyle(fontSize: 12),
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),

@@ -57,7 +57,12 @@ Future<void> seedDepartments() async {
       'code': 'MATH',
       'bookCount': 0,
     },
-    {'id': 'dept_law', 'name': 'Кафедра права', 'code': 'LAW', 'bookCount': 0},
+    {
+      'id': 'dept_law',
+      'name': 'Кафедра права',
+      'code': 'LAW',
+      'bookCount': 0,
+    },
     {
       'id': 'dept_lang',
       'name': 'Кафедра иностранных языков',

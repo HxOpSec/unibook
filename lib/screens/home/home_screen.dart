@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _greeting(String name) {
-    final hour = DateTime.now().hour;
+    final hour = DateTime.now().toLocal().hour;
     if (hour >= 6 && hour < 12) return 'Доброе утро, $name! ☀️';
     if (hour >= 12 && hour < 18) return 'Добрый день, $name! 👋';
     if (hour >= 18 && hour < 22) return 'Добрый вечер, $name! 🌙';
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: CircleAvatar(
               radius: 14,
               child: Text(
-                (user?.name.isNotEmpty ?? false)
+                (user?.name.trim().isNotEmpty ?? false)
                     ? user!.name.trim().substring(0, 1).toUpperCase()
                     : '?',
                 style: const TextStyle(fontSize: 11),

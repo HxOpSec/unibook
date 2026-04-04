@@ -49,10 +49,16 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   double get _passwordStrength {
     final value = _passwordCtrl.text;
-    if (value.length >= 10 && RegExp(r'\d').hasMatch(value)) return 1;
-    if (value.length >= 8) return 0.7;
-    if (value.length >= 6) return 0.45;
-    return 0.2;
+    if (value.isEmpty) return 0;
+
+    var score = 0.0;
+    if (value.length >= 8) score += 0.35;
+    if (value.length >= 12) score += 0.15;
+    if (RegExp(r'[A-ZА-Я]').hasMatch(value)) score += 0.2;
+    if (RegExp(r'[0-9]').hasMatch(value)) score += 0.15;
+    if (RegExp(r'[^A-Za-zА-Яа-я0-9]').hasMatch(value)) score += 0.15;
+
+    return score.clamp(0, 1);
   }
 
   bool get _needsTeacherCode => _role == 'teacher' || _role == 'admin';
