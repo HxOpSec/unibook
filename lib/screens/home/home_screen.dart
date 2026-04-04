@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: departments.isEmpty
-                    ? const ListView(
+                    ? ListView(
                         children: [
                           SizedBox(height: 120),
                           Center(child: Text('Кафедры не найдены')),
