@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  String _greeting(String name) {
+  String _getGreetingMessage(String name) {
     final hour = DateTime.now().toLocal().hour;
     if (hour >= 6 && hour < 12) return 'Доброе утро, $name! ☀️';
     if (hour >= 12 && hour < 18) return 'Добрый день, $name! 👋';
@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _greeting(user?.name.isNotEmpty == true ? user!.name : 'друг'),
+                      _getGreetingMessage(user?.name.isNotEmpty == true ? user!.name : 'друг'),
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),

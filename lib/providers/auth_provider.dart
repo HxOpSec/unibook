@@ -7,6 +7,11 @@ import 'package:unibook/services/auth_service.dart';
 import 'package:unibook/services/firestore_service.dart';
 
 class AuthProvider extends ChangeNotifier {
+  static const _devUserId = 'dev_001';
+  static const _devUserName = 'Разработчик';
+  static const _devUserEmail = 'dev@tgfeu.tj';
+  static const _devUserRole = 'admin';
+  static const _devDepartmentId = 'dept_finance';
   AuthProvider(this._authService, this._firestoreService) {
     initialize();
   }
@@ -78,11 +83,11 @@ class AuthProvider extends ChangeNotifier {
       _firebaseUser = null;
       _profileSub?.cancel();
       _user = UserModel(
-        uid: 'dev_001',
-        name: 'Разработчик',
-        email: 'dev@tgfeu.tj',
-        role: 'admin',
-        departmentId: 'dept_finance',
+        uid: _devUserId,
+        name: _devUserName,
+        email: _devUserEmail,
+        role: _devUserRole,
+        departmentId: _devDepartmentId,
         createdAt: DateTime.now(),
       );
       notifyListeners();

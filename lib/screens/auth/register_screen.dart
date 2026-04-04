@@ -63,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     return score.clamp(0, 1);
   }
 
-  bool get _needsTeacherCode => _role == 'teacher' || _role == 'admin';
+  bool get _requiresStaffCode => _role == 'teacher' || _role == 'admin';
 
   Future<void> _showSuccessAnimation() async {
     await showDialog<void>(
@@ -285,14 +285,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                               ),
                               AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 300),
-                                child: !_needsTeacherCode
+                                child: !_requiresStaffCode
                                     ? const SizedBox.shrink()
                                     : Padding(
                                         padding: const EdgeInsets.only(top: 10),
                                         child: TextFormField(
                                           key: const ValueKey('teacher-code'),
                                           controller: _teacherCodeCtrl,
-                                          validator: _needsTeacherCode
+                                          validator: _requiresStaffCode
                                               ? Validators.requiredField
                                               : null,
                                           decoration: const InputDecoration(

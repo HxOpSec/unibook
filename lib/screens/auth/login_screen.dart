@@ -84,13 +84,15 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     Navigator.of(context).pushReplacementNamed(AppRoutes.home);
   }
 
-  /// Computes horizontal shake offset from animation progress (0..1)
-  /// with linear amplitude reduction and direction reversal at mid-point.
+  /// Computes a symmetric shake offset that starts at 0, peaks mid-animation,
+  /// reverses direction at midpoint, and settles back to 0 at the end.
   double _calculateShakeOffset(double progress) {
     const shakeAmplitude = 10.0;
     const turnPoint = 0.5;
-    if (progress.abs() < 0.0001) return 0;
-    return (1 - progress) * shakeAmplitude * (progress < turnPoint ? 1 : -1);
+    const normalizedScale = 4.0;
+    final envelope = progress * (1 - progress) * normalizedScale;
+    final direction = progress < turnPoint ? 1.0 : -1.0;
+    return envelope * shakeAmplitude * direction;
   }
 
   @override
