@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:unibook/models/book_model.dart';
@@ -42,7 +43,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
     );
     final prefs = await SharedPreferences.getInstance();
     final savedPage = prefs.getInt('last_page_${book.id}') ?? 1;
-    await FirestoreService().incrementDownloadCount(book.id);
+    await context.read<FirestoreService>().incrementDownloadCount(book.id);
     if (!mounted) return;
     setState(() {
       _filePath = path;

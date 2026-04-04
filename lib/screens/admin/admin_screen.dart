@@ -3,15 +3,34 @@ import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
 import 'package:unibook/services/firestore_service.dart';
 
-class AdminScreen extends StatelessWidget {
+class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
+
+  @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> {
+  late Future<Map<String, int>> _statsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _statsFuture = context.read<FirestoreService>().getStats();
+  }
+
+  void _refreshStats() {
+    setState(() {
+      _statsFuture = context.read<FirestoreService>().getStats();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Панель администратора')),
       body: FutureBuilder<Map<String, int>>(
-        future: context.read<FirestoreService>().getStats(),
+        future: _statsFuture,
         builder: (context, snapshot) {
           final stats = snapshot.data ?? const {'books': 0, 'users': 0, 'departments': 0};
           return ListView(
@@ -95,7 +114,7 @@ class AdminScreen extends StatelessWidget {
                   leading: const Icon(Icons.timeline),
                   title: const Text('Обновите данные для просмотра последних действий'),
                   trailing: IconButton(
-                    onPressed: () => (context as Element).markNeedsBuild(),
+                    onPressed: _refreshStats,
                     icon: const Icon(Icons.refresh),
                   ),
                 ),

@@ -21,6 +21,11 @@ import 'package:unibook/services/auth_service.dart';
 import 'package:unibook/services/cloudinary_service.dart';
 import 'package:unibook/services/firestore_service.dart';
 
+const String kCloudinaryCloudName = String.fromEnvironment(
+  'CLOUDINARY_CLOUD_NAME',
+  defaultValue: '',
+);
+
 class UniBookApp extends StatelessWidget {
   const UniBookApp({super.key});
 
@@ -31,7 +36,8 @@ class UniBookApp extends StatelessWidget {
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<FirestoreService>(create: (_) => FirestoreService()),
         ProxyProvider<FirestoreService, CloudinaryService>(
-          update: (_, __, ___) => CloudinaryService(cloudName: 'demo'),
+          update: (_, __, ___) =>
+              CloudinaryService(cloudName: kCloudinaryCloudName),
         ),
         ChangeNotifierProxyProvider2<AuthService, FirestoreService, AuthProvider>(
           create: (context) => AuthProvider(
