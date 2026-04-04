@@ -38,6 +38,12 @@ class UploadProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (_cloudinaryService.cloudName.trim().isEmpty) {
+        throw Exception(
+          'Переменная CLOUDINARY_CLOUD_NAME не настроена',
+        );
+      }
+
       final valid = await FileUtils.isPdfSizeValid(pdf);
       if (!valid) {
         throw Exception('Файл слишком большой. Максимум 50 МБ');

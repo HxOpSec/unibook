@@ -17,7 +17,8 @@ class SearchBarWidget extends StatelessWidget {
       leading: const Icon(Icons.search),
       onChanged: onChanged,
       elevation: const WidgetStatePropertyAll(0),
-      backgroundColor: const WidgetStatePropertyAll(Colors.white),
+      backgroundColor:
+          WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
     );
   }
 }

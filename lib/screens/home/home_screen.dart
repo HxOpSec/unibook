@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _searchCtrl = TextEditingController();
+  String _searchTerm = '';
   List<DepartmentModel> _departments = [];
   bool _offline = false;
   late final StreamSubscription<List<ConnectivityResult>> _connectivitySub;
@@ -44,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _searchCtrl.dispose();
     _connectivitySub.cancel();
     super.dispose();
   }
@@ -53,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
-    final query = _searchCtrl.text.toLowerCase();
+    final query = _searchTerm.toLowerCase();
     final departments = _departments
         .where((d) => d.name.toLowerCase().contains(query))
         .toList();
@@ -99,7 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(16),
             child: SearchBarWidget(
               hintText: AppStrings.searchBooks,
-              onChanged: (_) => setState(() {}),
+              onChanged: (searchTerm) =>
+                  setState(() => _searchTerm = searchTerm),
             ),
           ),
           Expanded(

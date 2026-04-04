@@ -26,8 +26,9 @@ class Validators {
   static String? year(String? value) {
     if (requiredField(value) != null) return 'Введите год';
     final parsed = int.tryParse(value!);
-    if (parsed == null || parsed < 1900 || parsed > DateTime.now().year) {
-      return 'Введите корректный год';
+    final maxYear = DateTime.now().year + 1;
+    if (parsed == null || parsed < 1900 || parsed > maxYear) {
+      return 'Введите год от 1900 до $maxYear';
     }
     return null;
   }
