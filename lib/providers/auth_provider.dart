@@ -21,16 +21,22 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   User? _firebaseUser;
   UserModel? _user;
+  bool _isDevMode = false;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   User? get firebaseUser => _firebaseUser;
   UserModel? get user => _user;
-  bool get isAuthenticated => _firebaseUser != null;
+  bool get isAuthenticated => _isDevMode || _firebaseUser != null;
+  bool get isDeveloperMode => _isDevMode;
 
   void initialize() {
     _authSub?.cancel();
     _authSub = _authService.authStateChanges().listen((firebaseUser) {
+      if (_isDevMode) {
+        notifyListeners();
+        return;
+      }
       _firebaseUser = firebaseUser;
       _profileSub?.cancel();
       if (firebaseUser == null) {
@@ -48,11 +54,37 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login({required String email, required String password}) async {
     _setLoading(true);
     _error = null;
+    _isDevMode = false;
     try {
       await _authService.login(email, password);
       return true;
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> loginAsDeveloper() async {
+    _setLoading(true);
+    _error = null;
+    try {
+      _isDevMode = true;
+      _firebaseUser = null;
+      _profileSub?.cancel();
+      _user = UserModel(
+        uid: 'dev_001',
+        name: 'Разработчик',
+        email: 'dev@tgfeu.tj',
+        role: 'admin',
+        departmentId: 'dept_finance',
+        createdAt: DateTime.now(),
+      );
+      notifyListeners();
+      return true;
+    } catch (_) {
+      _error = 'Не удалось войти в режим разработчика';
       return false;
     } finally {
       _setLoading(false);
@@ -69,8 +101,9 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _setLoading(true);
     _error = null;
+    _isDevMode = false;
     try {
-      if (role == 'teacher') {
+      if (role == 'teacher' || role == 'admin') {
         final requiredCode = await _firestoreService.getTeacherCode();
         if (requiredCode.isNotEmpty && requiredCode != (teacherCode ?? '').trim()) {
           throw Exception('Неверный код учителя');
@@ -103,6 +136,13 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _error = null;
     try {
+      if (_isDevMode) {
+        _isDevMode = false;
+        _user = null;
+        _firebaseUser = null;
+        notifyListeners();
+        return;
+      }
       await _authService.logout();
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
