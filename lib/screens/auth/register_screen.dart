@@ -47,6 +47,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
+  /// Returns password strength in range 0..1 using length, uppercase,
+  /// digits, and special characters as weighted criteria.
   double get _passwordStrength {
     final value = _passwordCtrl.text;
     if (value.isEmpty) return 0;

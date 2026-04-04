@@ -15,6 +15,7 @@ Future<void> main() async {
   runApp(const UniBookApp());
 }
 
+/// Seeds 12 default university departments into Firestore on first launch.
 Future<void> seedDepartments() async {
   final firestore = FirebaseFirestore.instance;
   final snapshot = await firestore.collection('departments').limit(1).get();
