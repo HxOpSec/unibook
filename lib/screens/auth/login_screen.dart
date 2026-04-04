@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   double _calculateShakeOffset(double progress) {
     const shakeAmplitude = 10.0;
     const turnPoint = 0.5;
-    if (progress == 0) return 0;
+    if (progress.abs() < 0.0001) return 0;
     return (1 - progress) * shakeAmplitude * (progress < turnPoint ? 1 : -1);
   }
 

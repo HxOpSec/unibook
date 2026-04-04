@@ -77,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (hour >= 6 && hour < 12) return 'Доброе утро, $name! ☀️';
     if (hour >= 12 && hour < 18) return 'Добрый день, $name! 👋';
     if (hour >= 18 && hour < 22) return 'Добрый вечер, $name! 🌙';
-    if (hour >= 22 || hour < 6) return 'Доброй ночи, $name! 🌟';
-    return 'Здравствуйте, $name!';
+    return 'Доброй ночи, $name! 🌟';
   }
 
   @override
