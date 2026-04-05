@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/models/user_model.dart';
 import 'package:unibook/services/firestore_service.dart';
+import 'package:unibook/widgets/animated_list_item.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -42,31 +43,34 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     final user = users[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text(
-                            user.name.isEmpty
-                                ? '?'
-                                : user.name.trim()[0].toUpperCase(),
+                    return AnimatedListItem(
+                      index: index,
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            child: Text(
+                              user.name.isEmpty
+                                  ? '?'
+                                  : user.name.trim()[0].toUpperCase(),
+                            ),
                           ),
-                        ),
-                        title: Text(user.name),
-                        subtitle: Text(user.email),
-                        trailing: DropdownButton<String>(
-                          value: user.role,
-                          items: const [
-                            DropdownMenuItem(value: 'student', child: Text('Студент')),
-                            DropdownMenuItem(value: 'teacher', child: Text('Учитель')),
-                            DropdownMenuItem(value: 'admin', child: Text('Админ')),
-                          ],
-                          onChanged: (value) async {
-                            if (value == null || value == user.role) return;
-                            await context
-                                .read<FirestoreService>()
-                                .updateUserRole(user.uid, value);
-                          },
+                          title: Text(user.name),
+                          subtitle: Text(user.email),
+                          trailing: DropdownButton<String>(
+                            value: user.role,
+                            items: const [
+                              DropdownMenuItem(value: 'student', child: Text('Студент')),
+                              DropdownMenuItem(value: 'teacher', child: Text('Учитель')),
+                              DropdownMenuItem(value: 'admin', child: Text('Админ')),
+                            ],
+                            onChanged: (value) async {
+                              if (value == null || value == user.role) return;
+                              await context
+                                  .read<FirestoreService>()
+                                  .updateUserRole(user.uid, value);
+                            },
+                          ),
                         ),
                       ),
                     );

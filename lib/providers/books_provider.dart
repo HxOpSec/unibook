@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:unibook/models/book_model.dart';
 import 'package:unibook/services/firestore_service.dart';
 
-enum BookSort { byDate, byTitle }
+enum BookSort { byDate, byTitle, byAuthor }
 
 class BooksProvider extends ChangeNotifier {
   BooksProvider(this._firestoreService);
@@ -30,6 +30,8 @@ class BooksProvider extends ChangeNotifier {
 
     if (_sort == BookSort.byTitle) {
       filtered.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    } else if (_sort == BookSort.byAuthor) {
+      filtered.sort((a, b) => a.author.toLowerCase().compareTo(b.author.toLowerCase()));
     } else {
       filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
