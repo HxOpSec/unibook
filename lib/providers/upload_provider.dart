@@ -8,7 +8,10 @@ import 'package:unibook/services/cloudinary_service.dart';
 import 'package:unibook/services/firestore_service.dart';
 
 class UploadProvider extends ChangeNotifier {
-  UploadProvider(this._cloudinaryService, this._firestoreService);
+  UploadProvider([CloudinaryService? cloudinaryService, FirestoreService? firestoreService])
+      : _cloudinaryService =
+            cloudinaryService ?? CloudinaryService(cloudName: const String.fromEnvironment('CLOUDINARY_CLOUD_NAME', defaultValue: '')),
+        _firestoreService = firestoreService ?? FirestoreService();
 
   final CloudinaryService _cloudinaryService;
   final FirestoreService _firestoreService;

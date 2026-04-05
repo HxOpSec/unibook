@@ -7,7 +7,8 @@ import 'package:unibook/services/firestore_service.dart';
 enum BookSort { byDate, byTitle, byAuthor }
 
 class BooksProvider extends ChangeNotifier {
-  BooksProvider(this._firestoreService);
+  BooksProvider([FirestoreService? firestoreService])
+      : _firestoreService = firestoreService ?? FirestoreService();
 
   final FirestoreService _firestoreService;
 

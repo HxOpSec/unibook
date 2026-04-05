@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:unibook/app.dart';
 import 'package:unibook/core/constants/tgfeu_data.dart';
 import 'package:unibook/firebase_options.dart';
-import 'package:unibook/widgets/error_boundary.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,7 @@ Future<void> main() async {
   );
 
   await seedDepartments();
-  runApp(const ErrorBoundary(child: UniBookApp()));
+  runApp(const UniBookApp());
 }
 
 Future<void> seedDepartments() async {

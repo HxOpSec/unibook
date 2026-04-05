@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
-import 'package:unibook/core/theme/app_theme.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/books_provider.dart';
 import 'package:unibook/providers/upload_provider.dart';
@@ -17,14 +16,6 @@ import 'package:unibook/screens/reader/pdf_reader_screen.dart';
 import 'package:unibook/screens/splash/splash_screen.dart';
 import 'package:unibook/screens/teacher/my_books_screen.dart';
 import 'package:unibook/screens/teacher/upload_book_screen.dart';
-import 'package:unibook/services/auth_service.dart';
-import 'package:unibook/services/cloudinary_service.dart';
-import 'package:unibook/services/firestore_service.dart';
-
-const String kCloudinaryCloudName = String.fromEnvironment(
-  'CLOUDINARY_CLOUD_NAME',
-  defaultValue: '',
-);
 
 class UniBookApp extends StatelessWidget {
   const UniBookApp({super.key});
@@ -33,44 +24,74 @@ class UniBookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AuthService>(create: (_) => AuthService()),
-        Provider<FirestoreService>(create: (_) => FirestoreService()),
-        ProxyProvider<FirestoreService, CloudinaryService>(
-          update: (_, __, ___) =>
-              CloudinaryService(cloudName: kCloudinaryCloudName),
-        ),
-        ChangeNotifierProxyProvider2<AuthService, FirestoreService, AuthProvider>(
-          create: (context) => AuthProvider(
-            context.read<AuthService>(),
-            context.read<FirestoreService>(),
-          ),
-          update: (_, authService, firestoreService, previous) =>
-              previous ?? AuthProvider(authService, firestoreService),
-        ),
-        ChangeNotifierProxyProvider<FirestoreService, BooksProvider>(
-          create: (context) => BooksProvider(context.read<FirestoreService>()),
-          update: (_, firestore, previous) => previous ?? BooksProvider(firestore),
-        ),
-        ChangeNotifierProxyProvider2<CloudinaryService, FirestoreService, UploadProvider>(
-          create: (context) => UploadProvider(
-            context.read<CloudinaryService>(),
-            context.read<FirestoreService>(),
-          ),
-          update: (_, cloudinary, firestore, previous) =>
-              previous ?? UploadProvider(cloudinary, firestore),
-        ),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => BooksProvider()),
+        ChangeNotifierProvider(create: (_) => UploadProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'UniBook',
-        theme: AppTheme.lightTheme(),
-        initialRoute: AppRoutes.splash,
+        title: 'UniBook — ТГФЭУ',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF1565C0),
+            primary: const Color(0xFF1565C0),
+            secondary: const Color(0xFFFFD700),
+          ),
+          fontFamily: 'Roboto',
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF1565C0),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: false,
+          ),
+          cardTheme: CardThemeData(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1565C0),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              minimumSize: const Size(double.infinity, 52),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: const Color(0xFFF5F7FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFF1565C0), width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFFD32F2F)),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+          snackBarTheme: SnackBarThemeData(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        home: const SplashScreen(),
         onGenerateRoute: (settings) {
           Widget page;
           switch (settings.name) {
-            case AppRoutes.splash:
-              page = const SplashScreen();
-              break;
             case AppRoutes.login:
               page = const LoginScreen();
               break;
@@ -104,6 +125,7 @@ class UniBookApp extends StatelessWidget {
             case AppRoutes.adminDepartments:
               page = const AdminDepartmentsScreen();
               break;
+            case AppRoutes.splash:
             default:
               page = const SplashScreen();
           }
@@ -119,7 +141,6 @@ class UniBookApp extends StatelessWidget {
               settings.name == AppRoutes.admin) {
             return _slideFromRight(page, settings);
           }
-
           return MaterialPageRoute(builder: (_) => page, settings: settings);
         },
       ),
