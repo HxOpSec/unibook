@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';
+import 'package:unibook/widgets/glass_card.dart';
 
 class BookCard extends StatelessWidget {
   const BookCard({
@@ -23,11 +24,14 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deptColor = department?.colorValue ?? const Color(0xFF1565C0);
-    return Card(
+    final deptColor = department?.colorValue ?? Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A0030);
+    final textSecondary = isDark ? Colors.white70 : const Color(0xB31A0030);
+    return GlassCard(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
+      borderRadius: 16,
+      padding: EdgeInsets.zero,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
@@ -84,14 +88,18 @@ class BookCard extends StatelessWidget {
                         book.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         book.author,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13, color: Colors.grey),
+                        style: TextStyle(fontSize: 13, color: textSecondary),
                       ),
                       const SizedBox(height: 6),
                       Row(
@@ -99,7 +107,7 @@ class BookCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1565C0),
+                              color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
@@ -112,11 +120,11 @@ class BookCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(999),
-                              border: Border.all(color: Colors.grey.shade400),
+                              border: Border.all(color: textSecondary.withOpacity(0.4)),
                             ),
                             child: Text(
                               book.subject,
-                              style: const TextStyle(fontSize: 11),
+                              style: TextStyle(fontSize: 11, color: textSecondary),
                             ),
                           ),
                         ],
@@ -124,12 +132,11 @@ class BookCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_outlined,
-                              size: 12, color: Colors.grey),
+                          Icon(Icons.location_on_outlined, size: 12, color: textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             department?.code ?? '',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: TextStyle(fontSize: 12, color: textSecondary),
                           ),
                           const Spacer(),
                           IconButton(

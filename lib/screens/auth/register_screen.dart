@@ -7,6 +7,8 @@ import 'package:unibook/core/utils/validators.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
+import 'package:unibook/widgets/animated_background.dart';
+import 'package:unibook/widgets/glass_card.dart';
 import 'package:unibook/widgets/press_scale_button.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
@@ -90,69 +92,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final loading = context.watch<AuthProvider>().isLoading;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final backgroundGradient = isDark
+        ? const [
+            AppColors.darkBackgroundStart,
+            AppColors.darkBackgroundMid,
+            AppColors.darkBackgroundEnd,
+          ]
+        : const [
+            AppColors.lightBackgroundStart,
+            AppColors.lightBackgroundMid,
+            AppColors.lightBackgroundEnd,
+          ];
 
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            flex: 40,
+          Positioned.fill(
             child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [AppColors.primaryDark, AppColors.primary],
-                ),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      ),
-                      const SizedBox(height: 4),
-                      const Center(child: TgfeuLogo(size: 76, textSize: 15)),
-                      const SizedBox(height: 12),
-                      const Center(
-                        child: Text(
-                          'Создать аккаунт',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  colors: backgroundGradient,
                 ),
               ),
             ),
           ),
-          Expanded(
-            flex: 60,
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-              child: FutureBuilder<List<DepartmentModel>>(
-                future: context.read<FirestoreService>().getDepartments(),
-                builder: (context, snapshot) {
-                  final departments = snapshot.data ?? [];
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          const Positioned.fill(child: AnimatedBackground()),
+          SafeArea(
+            child: FutureBuilder<List<DepartmentModel>>(
+              future: context.read<FirestoreService>().getDepartments(),
+              builder: (context, snapshot) {
+                final departments = snapshot.data ?? [];
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  child: GlassCard(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 20),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () => Navigator.of(context).maybePop(),
+                                icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                              ),
+                              const Spacer(),
+                            ],
+                          ),
+                          const TgfeuLogo(size: 72, textSize: 14),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Создать аккаунт',
+                            style: TextStyle(
+                              color: textPrimary,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
                           TextFormField(
                             controller: _nameCtrl,
                             validator: Validators.requiredField,
@@ -200,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   : (_passwordStrength >= 0.66
                                       ? Colors.orange
                                       : AppColors.error),
-                              backgroundColor: Colors.grey.shade200,
+                              backgroundColor: textSecondary.withOpacity(0.2),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -254,7 +256,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 .map(
                                   (d) => DropdownMenuItem(
                                     value: d.id,
-                                    child: Text(d.name),
+                                    child: Text(
+                                      d.name,
+                                      style: TextStyle(color: textPrimary),
+                                    ),
                                   ),
                                 )
                                 .toList(),
@@ -314,9 +319,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],

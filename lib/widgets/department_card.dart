@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unibook/models/department_model.dart';
+import 'package:unibook/widgets/glass_card.dart';
 import 'package:unibook/widgets/press_scale_button.dart';
 
 class DepartmentCard extends StatelessWidget {
@@ -11,77 +12,77 @@ class DepartmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = department.colorValue;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A0030);
+
     return Hero(
       tag: 'dept_${department.id}',
       child: PressScaleButton(
         onTap: onTap,
-        child: Container(
-          height: 140,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color.withOpacity(0.7)],
+        child: GlassCard(
+          borderRadius: 16,
+          padding: EdgeInsets.zero,
+          child: Container(
+            height: 140,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [color.withOpacity(0.34), color.withOpacity(0.16)],
+              ),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '${department.bookCount}',
-                    style: const TextStyle(
-                      color: Color(0xFF1565C0),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11,
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white.withOpacity(0.88) : Colors.white,
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(department.iconData, color: Colors.white, size: 32),
-                    const SizedBox(height: 8),
-                    Text(
-                      department.name,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
+                    child: Text(
+                      '${department.bookCount}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,
+                        fontSize: 11,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${department.building} · ${department.room}',
-                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(department.iconData, color: textColor, size: 32),
+                      const SizedBox(height: 8),
+                      Text(
+                        department.name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${department.building} · ${department.room}',
+                        style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
