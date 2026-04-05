@@ -25,10 +25,12 @@ Future<void> main() async {
 }
 
 Future<void> seedDepartments() async {
+  // Firestore supports up to 500 operations per batch write.
   const maxBatchSize = 500;
   final firestore = FirebaseFirestore.instance;
   final snapshot = await firestore.collection('departments').count().get();
   final currentCount = snapshot.count ?? 0;
+  // Reseed when dataset is clearly incomplete for production TGFEU data.
   if (currentCount >= 20) return;
 
   final existing = await firestore.collection('departments').get();
