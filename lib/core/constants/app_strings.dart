@@ -148,9 +148,9 @@ abstract final class AppStrings {
   /// preference) as [languageCode] in UI code.
   ///
   /// Fallback order:
-  /// 1) requested language map
-  /// 2) Russian (`ru`) map
-  /// 3) the raw key itself
+  /// 1) key lookup in requested language map
+  /// 2) key lookup in Russian (`ru`) map
+  /// 3) the raw key itself (if both lookups fail)
   ///
   /// If [languageCode] is invalid or unsupported, the method falls back to
   /// Russian automatically.
