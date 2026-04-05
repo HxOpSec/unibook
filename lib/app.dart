@@ -65,21 +65,119 @@ class UniBookApp extends StatelessWidget {
         title: 'UniBook',
         theme: AppTheme.lightTheme(),
         initialRoute: AppRoutes.splash,
-        routes: {
-          AppRoutes.splash: (_) => const SplashScreen(),
-          AppRoutes.login: (_) => const LoginScreen(),
-          AppRoutes.register: (_) => const RegisterScreen(),
-          AppRoutes.home: (_) => const HomeScreen(),
-          AppRoutes.bookList: (_) => const BookListScreen(),
-          AppRoutes.reader: (_) => const PdfReaderScreen(),
-          AppRoutes.uploadBook: (_) => const UploadBookScreen(),
-          AppRoutes.myBooks: (_) => const MyBooksScreen(),
-          AppRoutes.profile: (_) => const ProfileScreen(),
-          AppRoutes.admin: (_) => const AdminScreen(),
-          AppRoutes.adminUsers: (_) => const AdminUsersScreen(),
-          AppRoutes.adminDepartments: (_) => const AdminDepartmentsScreen(),
+        onGenerateRoute: (settings) {
+          Widget page;
+          switch (settings.name) {
+            case AppRoutes.splash:
+              page = const SplashScreen();
+              break;
+            case AppRoutes.login:
+              page = const LoginScreen();
+              break;
+            case AppRoutes.register:
+              page = const RegisterScreen();
+              break;
+            case AppRoutes.home:
+              page = const HomeScreen();
+              break;
+            case AppRoutes.bookList:
+              page = const BookListScreen();
+              break;
+            case AppRoutes.reader:
+              page = const PdfReaderScreen();
+              break;
+            case AppRoutes.uploadBook:
+              page = const UploadBookScreen();
+              break;
+            case AppRoutes.myBooks:
+              page = const MyBooksScreen();
+              break;
+            case AppRoutes.profile:
+              page = const ProfileScreen();
+              break;
+            case AppRoutes.admin:
+              page = const AdminScreen();
+              break;
+            case AppRoutes.adminUsers:
+              page = const AdminUsersScreen();
+              break;
+            case AppRoutes.adminDepartments:
+              page = const AdminDepartmentsScreen();
+              break;
+            default:
+              page = const SplashScreen();
+          }
+
+          if (settings.name == AppRoutes.home) {
+            return _slideUp(page, settings);
+          }
+          if (settings.name == AppRoutes.reader) {
+            return _fadeScale(page, settings);
+          }
+          if (settings.name == AppRoutes.bookList ||
+              settings.name == AppRoutes.profile ||
+              settings.name == AppRoutes.admin) {
+            return _slideFromRight(page, settings);
+          }
+
+          return MaterialPageRoute(builder: (_) => page, settings: settings);
         },
       ),
+    );
+  }
+
+  static PageRouteBuilder<dynamic> _slideFromRight(
+    Widget page,
+    RouteSettings settings,
+  ) {
+    return PageRouteBuilder(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (_, animation, __, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+          child: child,
+        );
+      },
+    );
+  }
+
+  static PageRouteBuilder<dynamic> _slideUp(Widget page, RouteSettings settings) {
+    return PageRouteBuilder(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (_, animation, __, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+          child: child,
+        );
+      },
+    );
+  }
+
+  static PageRouteBuilder<dynamic> _fadeScale(Widget page, RouteSettings settings) {
+    return PageRouteBuilder(
+      settings: settings,
+      transitionDuration: const Duration(milliseconds: 350),
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.95, end: 1).animate(curved),
+            child: child,
+          ),
+        );
+      },
     );
   }
 }

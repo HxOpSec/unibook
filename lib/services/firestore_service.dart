@@ -64,10 +64,22 @@ class FirestoreService {
         .toList();
   }
 
+  Future<Map<String, DepartmentModel>> getDepartmentsMap() async {
+    final deps = await getDepartments();
+    return {for (final d in deps) d.id: d};
+  }
+
   Future<void> addDepartment(String name, String code) async {
     await _departments.add({
       'name': name.trim(),
       'code': code.trim(),
+      'facultyId': 'faculty_economics',
+      'facultyName': 'Факультет экономики и государственного управления',
+      'building': '',
+      'room': '',
+      'icon': 'school',
+      'color': '#1565C0',
+      'head': '',
       'bookCount': 0,
       'createdAt': FieldValue.serverTimestamp(),
     });
@@ -97,10 +109,10 @@ class FirestoreService {
         );
   }
 
-  Stream<List<BookModel>> streamRecentBooks() {
+  Stream<List<BookModel>> streamRecentBooks({int limit = 12}) {
     return _books
         .orderBy('createdAt', descending: true)
-        .limit(12)
+        .limit(limit)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -152,13 +164,14 @@ class FirestoreService {
   }
 
   Future<Map<String, int>> getStats() async {
-    final books = await _books.count().get();
-    final users = await _users.count().get();
-    final departments = await _departments.count().get();
+    final booksSnapshot = await _firestore.collection('books').count().get();
+    final usersSnapshot = await _firestore.collection('users').count().get();
+    final departmentsSnapshot = await _firestore.collection('departments').count().get();
+
     return {
-      'books': books.count ?? 0,
-      'users': users.count ?? 0,
-      'departments': departments.count ?? 0,
+      'books': booksSnapshot.count ?? 0,
+      'users': usersSnapshot.count ?? 0,
+      'departments': departmentsSnapshot.count ?? 0,
     };
   }
 }
