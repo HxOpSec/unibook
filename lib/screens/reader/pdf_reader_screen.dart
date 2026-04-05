@@ -21,7 +21,7 @@ class PdfReaderScreen extends StatefulWidget {
 
 class _PdfReaderScreenState extends State<PdfReaderScreen> {
   final _pdfController = PdfViewerController();
-  final _dio = Dio();
+  static final Dio _dio = Dio();
   CancelToken? _cancelToken;
   Timer? _hideTimer;
 

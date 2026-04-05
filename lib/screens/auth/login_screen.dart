@@ -17,6 +17,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+  static const _shakeScale = 4.0;
+  static const _shakeAmplitude = 10.0;
+  static const _shakeMidpoint = 0.5;
+
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
@@ -159,7 +163,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     animation: _shakeController,
                     builder: (context, child) {
                       final p = _shakeController.value;
-                      final offset = (p * (1 - p) * 4) * 10 * (p < 0.5 ? 1 : -1);
+                      final offset = (p * (1 - p) * _shakeScale) *
+                          _shakeAmplitude *
+                          (p < _shakeMidpoint ? 1 : -1);
                       return Transform.translate(offset: Offset(offset, 0), child: child);
                     },
                     child: Column(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:unibook/core/utils/color_utils.dart';
 
 class DepartmentModel {
   const DepartmentModel({
@@ -31,11 +32,7 @@ class DepartmentModel {
   final DateTime createdAt;
 
   Color get colorValue {
-    final hex = color.replaceFirst('#', '');
-    final normalized = hex.length == 6 ? 'FF$hex' : hex;
-    final parsed = int.tryParse(normalized, radix: 16);
-    if (parsed == null) return const Color(0xFF1565C0);
-    return Color(parsed);
+    return parseHexColor(color);
   }
 
   IconData get iconData {

@@ -257,15 +257,31 @@ class _BookListScreenState extends State<BookListScreen> {
       context: context,
       builder: (_) {
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              ListTile(leading: Icon(Icons.chrome_reader_mode), title: Text('Читать')),
-              ListTile(leading: Icon(Icons.share_outlined), title: Text('Поделиться')),
-              ListTile(leading: Icon(Icons.info_outline), title: Text('Инфо')),
-            ],
-          ),
-        );
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.chrome_reader_mode),
+                  title: const Text('Читать'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed(AppRoutes.reader, arguments: book);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.share_outlined),
+                  title: const Text('Поделиться'),
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text('Инфо'),
+                  subtitle: Text('${book.title} · ${book.author}'),
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          );
       },
     );
   }

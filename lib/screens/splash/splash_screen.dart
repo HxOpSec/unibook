@@ -15,6 +15,15 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Animation<double> _ringOpacity;
+  late final Animation<double> _ringScale;
+  late final Animation<double> _logoTextOpacity;
+  late final Animation<Offset> _titleSlide;
+  late final Animation<double> _subtitleOpacity;
+  late final Animation<double> _dividerExpand;
+  late final Animation<double> _line1Opacity;
+  late final Animation<double> _line2Opacity;
+  late final Animation<double> _progressOpacity;
 
   @override
   void initState() {
@@ -23,6 +32,18 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 3500),
     )..forward();
+    _ringOpacity = _fade(300, 900);
+    _ringScale = Tween<double>(begin: 0.75, end: 1).animate(_fade(300, 900));
+    _logoTextOpacity = _fade(600, 1000);
+    _titleSlide = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(_fade(900, 1400));
+    _subtitleOpacity = _fade(1200, 1600);
+    _dividerExpand = _fade(1600, 1900);
+    _line1Opacity = _fade(1800, 2200);
+    _line2Opacity = _fade(2000, 2400);
+    _progressOpacity = _fade(2500, 3000);
     Future.delayed(const Duration(milliseconds: 3500), _routeNext);
   }
 
@@ -49,14 +70,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ringOpacity = _fade(300, 900);
-    final ringScale = Tween<double>(begin: 0.75, end: 1).animate(_fade(300, 900));
-    final logoTextOpacity = _fade(600, 1000);
-    final titleSlide = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(_fade(900, 1400));
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -72,9 +85,9 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FadeTransition(
-                  opacity: ringOpacity,
+                  opacity: _ringOpacity,
                   child: ScaleTransition(
-                    scale: ringScale,
+                    scale: _ringScale,
                     child: SizedBox(
                       width: 140,
                       height: 140,
@@ -90,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                           ),
                           FadeTransition(
-                            opacity: logoTextOpacity,
+                            opacity: _logoTextOpacity,
                             child: const TgfeuLogo(size: 112, textSize: 22),
                           ),
                         ],
@@ -100,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 20),
                 SlideTransition(
-                  position: titleSlide,
+                  position: _titleSlide,
                   child: const Text(
                     'UniBook',
                     style: TextStyle(
@@ -112,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 8),
                 FadeTransition(
-                  opacity: _fade(1200, 1600),
+                  opacity: _subtitleOpacity,
                   child: Text(
                     'Библиотека ТГФЭУ',
                     style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 16),
@@ -120,7 +133,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 14),
                 SizeTransition(
-                  sizeFactor: _fade(1600, 1900),
+                  sizeFactor: _dividerExpand,
                   axis: Axis.horizontal,
                   child: Container(
                     width: 200,
@@ -130,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 14),
                 FadeTransition(
-                  opacity: _fade(1800, 2200),
+                  opacity: _line1Opacity,
                   child: Text(
                     'Таджикский государственный',
                     style: TextStyle(color: Colors.white.withOpacity(0.82)),
@@ -138,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 4),
                 FadeTransition(
-                  opacity: _fade(2000, 2400),
+                  opacity: _line2Opacity,
                   child: Text(
                     'финансово-экономический университет',
                     style: TextStyle(color: Colors.white.withOpacity(0.82)),
@@ -146,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 24),
                 FadeTransition(
-                  opacity: _fade(2500, 3000),
+                  opacity: _progressOpacity,
                   child: const SizedBox(
                     width: 34,
                     height: 34,

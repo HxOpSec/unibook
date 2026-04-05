@@ -11,6 +11,7 @@ import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/animated_list_item.dart';
+import 'package:unibook/widgets/about_dialog_content.dart';
 import 'package:unibook/widgets/department_card.dart';
 import 'package:unibook/widgets/empty_state.dart';
 import 'package:unibook/widgets/university_emblem.dart';
@@ -121,7 +122,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_outlined, color: Colors.white)),
+            IconButton(
+              onPressed: () => _showNotificationsInfo(context),
+              icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            ),
             GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
               child: Container(
@@ -479,22 +483,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _showTgfeuAboutDialog(BuildContext context) {
     showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            TgfeuLogo(size: 56, textSize: 12),
-            SizedBox(height: 12),
-            Text('UniBook', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Text('Официальное приложение ТГФЭУ'),
-            SizedBox(height: 4),
-            Text('tgfeu.tj'),
-            SizedBox(height: 4),
-            Text(tgfeuAddress, textAlign: TextAlign.center),
-          ],
-        ),
-      ),
+      builder: (_) => const AlertDialog(content: AboutDialogContent()),
+    );
+  }
+
+  void _showNotificationsInfo(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Уведомления появятся в следующем обновлении')),
     );
   }
 }

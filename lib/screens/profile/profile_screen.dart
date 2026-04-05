@@ -7,6 +7,7 @@ import 'package:unibook/core/utils/snackbar_utils.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/animated_list_item.dart';
+import 'package:unibook/widgets/about_dialog_content.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -212,22 +213,7 @@ class ProfileScreen extends StatelessWidget {
                     title: 'О приложении',
                     onTap: () => showDialog<void>(
                       context: context,
-                      builder: (_) => AlertDialog(
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            TgfeuLogo(size: 52, textSize: 12),
-                            SizedBox(height: 12),
-                            Text('Версия 1.0.0'),
-                            SizedBox(height: 4),
-                            Text('Официальное приложение ТГФЭУ'),
-                            SizedBox(height: 4),
-                            Text('tgfeu.tj'),
-                            SizedBox(height: 4),
-                            Text(tgfeuAddress, textAlign: TextAlign.center),
-                          ],
-                        ),
-                      ),
+                      builder: (_) => const AlertDialog(content: AboutDialogContent()),
                     ),
                   ),
                   _MenuTile(
