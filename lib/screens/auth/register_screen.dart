@@ -139,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               IconButton(
                                 onPressed: () => Navigator.of(context).maybePop(),
-                                icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                                icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
                               ),
                               const Spacer(),
                             ],

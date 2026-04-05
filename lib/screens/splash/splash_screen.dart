@@ -198,12 +198,14 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: 24),
                     FadeTransition(
                       opacity: _progressOpacity,
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 34,
                         height: 34,
                         child: CircularProgressIndicator(
                           strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryLight),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            isDark ? AppColors.gold : AppColors.primary,
+                          ),
                         ),
                       ),
                     ),
