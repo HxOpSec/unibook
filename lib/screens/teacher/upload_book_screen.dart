@@ -162,7 +162,7 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                           .map(
                             (d) => DropdownMenuItem(
                               value: d.id,
-                              child: Text('${d.name} — ${d.facultyName}'),
+                              child: Text('${d.name} — ${d.facultyName}', maxLines: 1, overflow: TextOverflow.ellipsis),
                             ),
                           )
                           .toList(),

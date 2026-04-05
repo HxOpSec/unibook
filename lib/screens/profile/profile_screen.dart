@@ -2,323 +2,197 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/constants/app_routes.dart';
-import 'package:unibook/core/constants/tgfeu_data.dart';
-import 'package:unibook/core/utils/snackbar_utils.dart';
 import 'package:unibook/providers/auth_provider.dart';
-import 'package:unibook/services/firestore_service.dart';
-import 'package:unibook/widgets/animated_list_item.dart';
-import 'package:unibook/widgets/about_dialog_content.dart';
-import 'package:unibook/widgets/university_emblem.dart';
+import 'package:unibook/providers/settings_provider.dart';
+import 'package:unibook/widgets/animated_background.dart';
+import 'package:unibook/widgets/ddmit_logo.dart';
+import 'package:unibook/widgets/glass_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  String _roleLabel(String role) {
-    switch (role) {
-      case 'teacher':
-        return 'Учитель';
-      case 'admin':
-        return 'Мудири кафедра';
-      default:
-        return 'Студент';
-    }
-  }
-
-  Color _roleColor(String role) {
-    switch (role) {
-      case 'teacher':
-        return AppColors.success;
-      case 'admin':
-        return AppColors.gold;
-      default:
-        return AppColors.primary;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final settings = context.watch<SettingsProvider>();
     final user = auth.user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? const [AppColors.darkBackgroundStart, AppColors.darkBackgroundMid, AppColors.darkBackgroundEnd]
+        : const [AppColors.lightBackgroundStart, AppColors.lightBackgroundMid, AppColors.lightBackgroundEnd];
 
-    if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    String roleLabel() {
+      if (user?.isAdmin == true) return settings.t('administrator');
+      if (user?.isTeacher == true) return settings.t('teacher');
+      return settings.t('student');
     }
 
-    final initials = user.name.trim().isEmpty
-        ? '?'
-        : user.name
-            .trim()
-            .split(' ')
-            .take(2)
-            .map((e) => e.substring(0, 1).toUpperCase())
-            .join();
-    final roleColor = _roleColor(user.role);
-
     return Scaffold(
-      body: Column(
+      appBar: AppBar(title: Text(settings.t('profile'))),
+      body: Stack(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [AppColors.primaryDark, AppColors.primary],
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      ),
-                    ),
-                    Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primaryLight, AppColors.primaryDark],
-                        ),
-                        border: Border.all(color: AppColors.gold, width: 3),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        initials,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      user.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: roleColor,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        _roleLabel(user.role),
-                        style: TextStyle(
-                          color: user.role == 'admin' ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      user.departmentId,
-                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
-                    ),
-                    Text(
-                      'ТГФЭУ',
-                      style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 12),
-                    ),
-                  ],
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: gradient,
                 ),
               ),
             ),
           ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: Future.wait([
-                context.read<FirestoreService>().streamBooksByUploader(user.uid).first,
-                context.read<FirestoreService>().getDepartments(),
-              ]),
-              builder: (context, snapshot) {
-                final uploadedBooksCount = snapshot.hasData
-                    ? (snapshot.data![0] as List).length
-                    : 0;
-                final departments =
-                    snapshot.hasData ? snapshot.data![1] as List<dynamic> : <dynamic>[];
-                final deptNames = departments
-                    .where((d) => d.id == user.departmentId)
-                    .map((d) => d.name as String)
-                    .toList();
-                final deptName =
-                    deptNames.isEmpty ? user.departmentId : deptNames.first;
-
-                final items = <Widget>[
-                  _MenuTile(
-                    icon: Icons.edit_outlined,
-                    title: 'Редактировать профиль',
-                    onTap: () async {
-                      final controller = TextEditingController(text: user.name);
-                      final value = await showDialog<String>(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Изменить имя'),
-                          content: TextField(controller: controller),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Отмена'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, controller.text.trim()),
-                              child: const Text('Сохранить'),
-                            ),
-                          ],
+          const Positioned.fill(child: AnimatedBackground()),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+              children: [
+                GlassCard(
+                  child: Column(
+                    children: [
+                      DdmitLogo(
+                        size: 74,
+                        text: settings.languageCode == 'en' ? 'DDMIT' : 'ДДМИТ',
+                        textSize: settings.languageCode == 'en' ? 14 : 12,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        user?.name ?? settings.t('notAuthorized'),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user?.email ?? settings.t('signInToAdmin'),
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(999),
                         ),
-                      );
-                      if (value != null && value.isNotEmpty) {
-                        await context.read<FirestoreService>().updateUserName(user.uid, value);
-                        if (context.mounted) showSuccess(context, 'Профиль обновлён');
-                      }
-                    },
+                        child: Text(
+                          roleLabel(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
-                  if (user.isTeacher || user.isAdmin)
-                    _MenuTile(
-                      icon: Icons.library_books_outlined,
-                      title: 'Мои книги',
-                      trailing: _Badge(text: '$uploadedBooksCount'),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.myBooks),
-                    ),
-                  _MenuTile(
-                    icon: Icons.bookmark_outline,
-                    title: 'Избранные книги',
+                ),
+                const SizedBox(height: 12),
+                _SettingTile(
+                  icon: Icons.color_lens_outlined,
+                  title: settings.t('changeTheme'),
+                  subtitle: isDark ? settings.t('darkTheme') : settings.t('lightTheme'),
+                  onTap: settings.toggleTheme,
+                ),
+                _SettingTile(
+                  icon: Icons.language_outlined,
+                  title: settings.t('changeLanguage'),
+                  subtitle: settings.languageCode.toUpperCase(),
+                  onTap: () => _showLanguagePicker(context, settings),
+                ),
+                if (!auth.isAdminOrTeacher)
+                  _SettingTile(
+                    icon: Icons.lock_outline,
+                    title: settings.t('adminLogin'),
+                    subtitle: settings.t('adminOnlyLoginHint'),
+                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.login),
                   ),
-                  _MenuTile(
-                    icon: Icons.history_outlined,
-                    title: 'История чтения',
+                if (auth.isAdminOrTeacher)
+                  _SettingTile(
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: settings.t('openAdminPanel'),
+                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.admin),
                   ),
-                  if (user.isAdmin)
-                    _MenuTile(
-                      icon: Icons.admin_panel_settings,
-                      title: 'Панель администратора',
-                      iconColor: Colors.red,
-                      trailing: const _Badge(text: 'ADMIN', color: Colors.red),
-                      onTap: () => Navigator.of(context).pushNamed(AppRoutes.admin),
-                    ),
-                  _MenuTile(
-                    icon: Icons.info_outline,
-                    title: 'О приложении',
-                    onTap: () => showDialog<void>(
-                      context: context,
-                      builder: (_) => const AlertDialog(content: AboutDialogContent()),
-                    ),
-                  ),
-                  _MenuTile(
-                    icon: Icons.logout,
-                    title: 'Выйти',
-                    iconColor: Colors.red,
-                    onTap: () async {
-                      final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text('Выйти из аккаунта?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text('Отмена'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('Выйти'),
-                                ),
-                              ],
-                            ),
-                          ) ??
-                          false;
-                      if (!confirm) return;
-                      await auth.logout();
-                      if (context.mounted) {
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
-                      }
-                    },
-                  ),
-                ];
-
-                return ListView.separated(
-                  padding: const EdgeInsets.all(14),
-                  itemCount: items.length + 1,
-                  separatorBuilder: (_, __) => const SizedBox(height: 6),
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return ListTile(
-                        leading: const Icon(Icons.school_outlined, color: AppColors.primary),
-                        title: Text(deptName),
-                        subtitle: Text(user.email),
-                        tileColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      );
+                _SettingTile(
+                  icon: Icons.logout,
+                  title: settings.t('logout'),
+                  danger: true,
+                  onTap: () async {
+                    await auth.logout();
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
                     }
-                    return AnimatedListItem(index: index, child: items[index - 1]);
                   },
-                );
-              },
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
-    required this.title,
-    this.onTap,
-    this.trailing,
-    this.iconColor = AppColors.primary,
-  });
-
-  final IconData icon;
-  final String title;
-  final VoidCallback? onTap;
-  final Widget? trailing;
-  final Color iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      tileColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      leading: Icon(icon, color: iconColor),
-      title: Text(title),
-      trailing: trailing ?? const Icon(Icons.chevron_right),
+  void _showLanguagePicker(BuildContext context, SettingsProvider settings) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Русский'),
+              onTap: () {
+                settings.setLanguage('ru');
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Тоҷикӣ'),
+              onTap: () {
+                settings.setLanguage('tj');
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('English'),
+              onTap: () {
+                settings.setLanguage('en');
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge({required this.text, this.color = AppColors.primary});
+class _SettingTile extends StatelessWidget {
+  const _SettingTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+    this.danger = false,
+  });
 
-  final String text;
-  final Color color;
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+  final bool danger;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 11),
+    final color = danger ? Colors.redAccent : AppColors.primary;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        child: ListTile(
+          onTap: onTap,
+          leading: Icon(icon, color: color),
+          title: Text(title),
+          subtitle: subtitle == null ? null : Text(subtitle!),
+          trailing: const Icon(Icons.chevron_right),
+        ),
       ),
     );
   }

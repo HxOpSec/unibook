@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/widgets/glass_card.dart';
 import 'package:unibook/widgets/press_scale_button.dart';
@@ -11,79 +12,78 @@ class DepartmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = department.colorValue;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : const Color(0xFF1A0030);
+    final textPrimary = isDark ? Colors.white : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final color = department.colorValue;
 
-    return Hero(
-      tag: 'dept_${department.id}',
-      child: PressScaleButton(
-        onTap: onTap,
-        child: GlassCard(
-          borderRadius: 16,
-          padding: EdgeInsets.zero,
-          child: Container(
-            height: 140,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [color.withOpacity(0.34), color.withOpacity(0.16)],
-              ),
-            ),
-            child: Stack(
+    return PressScaleButton(
+      onTap: onTap,
+      child: GlassCard(
+        radius: 20,
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Positioned(
-                  right: 10,
-                  top: 10,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withOpacity(0.88) : Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '${department.bookCount}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 11,
-                      ),
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [color, color.withOpacity(0.7)],
                     ),
                   ),
+                  child: Icon(department.iconData, color: Colors.white, size: 20),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(department.iconData, color: textColor, size: 32),
-                      const SizedBox(height: 8),
-                      Text(
-                        department.name,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${department.building} · ${department.room}',
-                        style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 11),
-                      ),
-                    ],
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.20),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${department.bookCount}',
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 10),
+            Text(
+              department.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              department.facultyName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: textSecondary, fontSize: 12),
+            ),
+            const Spacer(),
+            Text(
+              '${department.building} · ${department.room}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: textSecondary, fontSize: 11),
+            ),
+          ],
         ),
       ),
     );

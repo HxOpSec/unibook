@@ -9,94 +9,91 @@ abstract final class AppTheme {
   static ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
     final primary = isDark ? AppColors.primary : AppColors.lightAccent;
-    final colorScheme = ColorScheme.fromSeed(
-      brightness: brightness,
-      seedColor: primary,
-      primary: primary,
-      error: AppColors.error,
-      surface: isDark ? AppColors.darkGlassCard : AppColors.lightGlassCard,
-    );
+    final onSurface = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      colorScheme: colorScheme,
+      colorScheme: ColorScheme.fromSeed(
+        brightness: brightness,
+        seedColor: primary,
+        primary: primary,
+        surface: isDark ? AppColors.darkGlassCard : AppColors.lightGlassCard,
+      ),
       scaffoldBackgroundColor:
           isDark ? AppColors.darkBackgroundStart : AppColors.lightBackgroundStart,
       textTheme: TextTheme(
         displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
-          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+          fontSize: 34,
+          fontWeight: FontWeight.w800,
+          color: onSurface,
         ),
         headlineMedium: TextStyle(
           fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w700,
+          color: onSurface,
         ),
-        titleMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+        titleLarge: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: onSurface,
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.w400,
-          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w500,
+          color: onSurface,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          color: onSurface,
         ),
         bodySmall: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w400,
+          fontSize: 12,
           color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
         ),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+        foregroundColor: onSurface,
         elevation: 0,
         centerTitle: false,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: isDark ? AppColors.darkInputBg : Colors.white.withOpacity(0.35),
-        labelStyle: TextStyle(
-          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-        ),
-        hintStyle: TextStyle(
-          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: isDark ? AppColors.darkInputBorder : AppColors.lightGlassBorder,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: isDark ? AppColors.primary : AppColors.lightAccent,
-            width: 1.8,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: isDark ? AppColors.darkInputBorder : AppColors.lightGlassBorder,
-          ),
-        ),
       ),
       cardTheme: CardThemeData(
         color: isDark ? AppColors.darkGlassCard : AppColors.lightGlassCard,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark ? AppColors.darkInputBg : Colors.white.withOpacity(0.36),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        hintStyle: TextStyle(
+          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+        ),
+        labelStyle: TextStyle(
+          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkInputBorder : AppColors.lightGlassBorder,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primary, width: 1.6),
+        ),
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor:
-            isDark ? AppColors.darkBackgroundMid.withOpacity(0.9) : AppColors.lightAccent,
+            isDark ? AppColors.darkBackgroundMid.withOpacity(0.88) : AppColors.lightAccent,
         contentTextStyle: const TextStyle(color: Colors.white),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
       ),
     );
   }
