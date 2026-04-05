@@ -295,7 +295,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const Spacer(),
-                        TextButton(onPressed: () {}, child: const Text('Все →')),
+                        TextButton(
+                          onPressed: () => setState(() => _searchCtrl.clear()),
+                          child: const Text('Все →'),
+                        ),
                       ],
                     ),
                   ),

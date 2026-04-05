@@ -72,7 +72,9 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
         }
       });
     } catch (_) {
-      if (mounted) Navigator.of(context).maybePop();
+      if (!mounted) return;
+      showError(context, 'Не удалось загрузить PDF файл');
+      Navigator.of(context).maybePop();
     }
   }
 

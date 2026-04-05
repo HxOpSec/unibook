@@ -48,10 +48,9 @@ const faculties = <FacultyInfo>[
 ];
 
 String facultyNameById(String id) {
-  return faculties
-      .where((f) => f.id == id)
-      .map((f) => f.name)
-      .firstWhere((_) => true, orElse: () => 'Факультет не указан');
+  final matches = faculties.where((f) => f.id == id).toList();
+  if (matches.isEmpty) return 'Факультет не указан';
+  return matches.first.name;
 }
 
 const tgfeuDepartments = <Map<String, dynamic>>[
