@@ -9,6 +9,7 @@ import 'package:unibook/core/constants/tgfeu_data.dart';
 import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
+import 'package:unibook/providers/books_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/animated_list_item.dart';
 import 'package:unibook/widgets/about_dialog_content.dart';
@@ -296,7 +297,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         const Spacer(),
                         TextButton(
-                          onPressed: () => setState(() => _searchCtrl.clear()),
+                          onPressed: () {
+                            setState(() => _searchCtrl.clear());
+                            context.read<BooksProvider>().setQuery('');
+                          },
                           child: const Text('Все →'),
                         ),
                       ],

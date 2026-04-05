@@ -71,8 +71,9 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
           showSuccess(context, 'Продолжаем с страницы $savedPage');
         }
       });
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
+      debugPrint('PDF download error: $e');
       showError(context, 'Не удалось загрузить PDF файл');
       Navigator.of(context).maybePop();
     }
