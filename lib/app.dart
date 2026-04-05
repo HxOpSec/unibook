@@ -27,7 +27,9 @@ class UniBookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(create: (_) => FirestoreService()),
+        Provider<FirestoreService>(
+          create: (_) => FirestoreService(),
+        ),
         ChangeNotifierProvider(
           create: (context) => AuthProvider(null, context.read<FirestoreService>()),
         ),
@@ -37,18 +39,21 @@ class UniBookApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UploadProvider(null, context.read<FirestoreService>()),
         ),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider(),
+        ),
       ],
       child: Consumer<SettingsProvider>(
         builder: (_, settings, __) {
           return AnimatedTheme(
             duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
             data: settings.themeMode == ThemeMode.dark
                 ? AppTheme.darkTheme()
                 : AppTheme.lightTheme(),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: AppStrings.translate('productName', languageCode: settings.languageCode),
+              title: AppStrings.get('app_name', settings.language),
               theme: AppTheme.lightTheme(),
               darkTheme: AppTheme.darkTheme(),
               themeMode: settings.themeMode,
@@ -98,7 +103,10 @@ class UniBookApp extends StatelessWidget {
       transitionDuration: const Duration(milliseconds: 320),
       pageBuilder: (_, __, ___) => page,
       transitionsBuilder: (_, animation, __, child) {
-        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(

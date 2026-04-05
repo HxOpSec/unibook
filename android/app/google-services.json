@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "82016327879",
+    "project_id": "unibook-umed",
+    "storage_bucket": "unibook-umed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82016327879:android:662c0303f4f3b3e90706e2",
+        "android_client_info": {
+          "package_name": "com.ddmit.unibook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-0kv2sZGLzriBcDb2IUfBcUmtM9_F1rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82016327879:android:91f3457d5bb52f8b0706e2",
+        "android_client_info": {
+          "package_name": "com.example.unibook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-0kv2sZGLzriBcDb2IUfBcUmtM9_F1rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
