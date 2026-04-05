@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
+import 'package:unibook/core/constants/app_strings.dart';
 import 'package:unibook/core/theme/app_theme.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/books_provider.dart';
+import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/providers/upload_provider.dart';
 import 'package:unibook/screens/admin/admin_departments_screen.dart';
 import 'package:unibook/screens/admin/admin_screen.dart';
 import 'package:unibook/screens/admin/admin_users_screen.dart';
 import 'package:unibook/screens/auth/login_screen.dart';
-import 'package:unibook/screens/auth/register_screen.dart';
 import 'package:unibook/screens/home/book_list_screen.dart';
 import 'package:unibook/screens/home/home_screen.dart';
 import 'package:unibook/screens/profile/profile_screen.dart';
@@ -17,6 +18,7 @@ import 'package:unibook/screens/reader/pdf_reader_screen.dart';
 import 'package:unibook/screens/splash/splash_screen.dart';
 import 'package:unibook/screens/teacher/my_books_screen.dart';
 import 'package:unibook/screens/teacher/upload_book_screen.dart';
+import 'package:unibook/services/firestore_service.dart';
 
 class UniBookApp extends StatelessWidget {
   const UniBookApp({super.key});
@@ -25,123 +27,82 @@ class UniBookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => BooksProvider()),
-        ChangeNotifierProvider(create: (_) => UploadProvider()),
+        Provider(create: (_) => FirestoreService()),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(null, context.read<FirestoreService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BooksProvider(context.read<FirestoreService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UploadProvider(null, context.read<FirestoreService>()),
+        ),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'UniBook — ТГФЭУ',
-        theme: AppTheme.lightTheme(),
-        darkTheme: AppTheme.darkTheme(),
-        themeMode: ThemeMode.system,
-        home: const SplashScreen(),
-        onGenerateRoute: (settings) {
-          Widget page;
-          switch (settings.name) {
-            case AppRoutes.login:
-              page = const LoginScreen();
-              break;
-            case AppRoutes.register:
-              page = const RegisterScreen();
-              break;
-            case AppRoutes.home:
-              page = const HomeScreen();
-              break;
-            case AppRoutes.bookList:
-              page = const BookListScreen();
-              break;
-            case AppRoutes.reader:
-              page = const PdfReaderScreen();
-              break;
-            case AppRoutes.uploadBook:
-              page = const UploadBookScreen();
-              break;
-            case AppRoutes.myBooks:
-              page = const MyBooksScreen();
-              break;
-            case AppRoutes.profile:
-              page = const ProfileScreen();
-              break;
-            case AppRoutes.admin:
-              page = const AdminScreen();
-              break;
-            case AppRoutes.adminUsers:
-              page = const AdminUsersScreen();
-              break;
-            case AppRoutes.adminDepartments:
-              page = const AdminDepartmentsScreen();
-              break;
-            case AppRoutes.splash:
-            default:
-              page = const SplashScreen();
-          }
-
-          if (settings.name == AppRoutes.home) {
-            return _slideUp(page, settings);
-          }
-          if (settings.name == AppRoutes.reader) {
-            return _fadeScale(page, settings);
-          }
-          if (settings.name == AppRoutes.bookList ||
-              settings.name == AppRoutes.profile ||
-              settings.name == AppRoutes.admin) {
-            return _slideFromRight(page, settings);
-          }
-          return MaterialPageRoute(builder: (_) => page, settings: settings);
+      child: Consumer<SettingsProvider>(
+        builder: (_, settings, __) {
+          return AnimatedTheme(
+            duration: const Duration(milliseconds: 350),
+            data: settings.themeMode == ThemeMode.dark
+                ? AppTheme.darkTheme()
+                : AppTheme.lightTheme(),
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: AppStrings.translate('productName', languageCode: settings.languageCode),
+              theme: AppTheme.lightTheme(),
+              darkTheme: AppTheme.darkTheme(),
+              themeMode: settings.themeMode,
+              home: const SplashScreen(),
+              onGenerateRoute: (route) {
+                final page = _resolvePage(route.name);
+                return _fadeScale(page, route);
+              },
+            ),
+          );
         },
       ),
     );
   }
 
-  static PageRouteBuilder<dynamic> _slideFromRight(
-    Widget page,
-    RouteSettings settings,
-  ) {
-    return PageRouteBuilder(
-      settings: settings,
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (_, __, ___) => page,
-      transitionsBuilder: (_, animation, __, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-          child: child,
-        );
-      },
-    );
-  }
-
-  static PageRouteBuilder<dynamic> _slideUp(Widget page, RouteSettings settings) {
-    return PageRouteBuilder(
-      settings: settings,
-      transitionDuration: const Duration(milliseconds: 400),
-      pageBuilder: (_, __, ___) => page,
-      transitionsBuilder: (_, animation, __, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 1),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-          child: child,
-        );
-      },
-    );
+  Widget _resolvePage(String? name) {
+    switch (name) {
+      case AppRoutes.login:
+        return const LoginScreen();
+      case AppRoutes.home:
+        return const HomeScreen();
+      case AppRoutes.bookList:
+        return const BookListScreen();
+      case AppRoutes.reader:
+        return const PdfReaderScreen();
+      case AppRoutes.uploadBook:
+        return const UploadBookScreen();
+      case AppRoutes.myBooks:
+        return const MyBooksScreen();
+      case AppRoutes.profile:
+        return const ProfileScreen();
+      case AppRoutes.admin:
+        return const AdminScreen();
+      case AppRoutes.adminUsers:
+        return const AdminUsersScreen();
+      case AppRoutes.adminDepartments:
+        return const AdminDepartmentsScreen();
+      case AppRoutes.splash:
+      default:
+        return const SplashScreen();
+    }
   }
 
   static PageRouteBuilder<dynamic> _fadeScale(Widget page, RouteSettings settings) {
     return PageRouteBuilder(
       settings: settings,
-      transitionDuration: const Duration(milliseconds: 350),
+      transitionDuration: const Duration(milliseconds: 320),
       pageBuilder: (_, __, ___) => page,
       transitionsBuilder: (_, animation, __, child) {
         final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.95, end: 1).animate(curved),
+            scale: Tween<double>(begin: 0.97, end: 1).animate(curved),
             child: child,
           ),
         );

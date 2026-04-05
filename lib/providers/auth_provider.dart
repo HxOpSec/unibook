@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unibook/core/constants/app_strings.dart';
 import 'package:unibook/models/user_model.dart';
 import 'package:unibook/services/auth_service.dart';
 import 'package:unibook/services/firestore_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  static const _devUserId = 'dev_001';
-  static const _devUserName = 'Разработчик';
-  static const _devUserEmail = 'dev@tgfeu.tj';
-  static const _devUserRole = 'admin';
-  static const _devDepartmentId = 'dept_finance';
   AuthProvider([AuthService? authService, FirestoreService? firestoreService])
       : _authService = authService ?? AuthService(),
         _firestoreService = firestoreService ?? FirestoreService() {
@@ -28,22 +24,18 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   User? _firebaseUser;
   UserModel? _user;
-  bool _isDevMode = false;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   User? get firebaseUser => _firebaseUser;
   UserModel? get user => _user;
-  bool get isAuthenticated => _isDevMode || _firebaseUser != null;
-  bool get isDeveloperMode => _isDevMode;
+  bool get isAuthenticated => _firebaseUser != null;
+
+  bool get isAdminOrTeacher => _user?.isAdmin == true || _user?.isTeacher == true;
 
   void initialize() {
     _authSub?.cancel();
     _authSub = _authService.authStateChanges().listen((firebaseUser) {
-      if (_isDevMode) {
-        notifyListeners();
-        return;
-      }
       _firebaseUser = firebaseUser;
       _profileSub?.cancel();
       if (firebaseUser == null) {
@@ -61,41 +53,21 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login({required String email, required String password}) async {
     _setLoading(true);
     _error = null;
-    _isDevMode = false;
     try {
       await _authService.login(email, password);
+      final signedUser = _authService.currentUser;
+      if (signedUser == null) {
+        throw Exception(AppStrings.translate('errorGeneric'));
+      }
+
+      final profile = await _firestoreService.getUser(signedUser.uid);
+      if (profile == null || !(profile.isAdmin || profile.isTeacher)) {
+        await _authService.logout();
+        throw Exception(AppStrings.translate('adminAccessDenied'));
+      }
       return true;
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<bool> loginAsDeveloper() async {
-    _setLoading(true);
-    _error = null;
-    try {
-      if (!kDebugMode) {
-        _error = 'Режим разработчика доступен только в debug-сборке';
-        return false;
-      }
-      _isDevMode = true;
-      _firebaseUser = null;
-      _profileSub?.cancel();
-      _user = UserModel(
-        uid: _devUserId,
-        name: _devUserName,
-        email: _devUserEmail,
-        role: _devUserRole,
-        departmentId: _devDepartmentId,
-        createdAt: DateTime.now(),
-      );
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _error = 'Не удалось войти в режим разработчика';
       return false;
     } finally {
       _setLoading(false);
@@ -112,7 +84,6 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _setLoading(true);
     _error = null;
-    _isDevMode = false;
     try {
       if (role == 'teacher' || role == 'admin') {
         final requiredCode = await _firestoreService.getTeacherCode();
@@ -147,13 +118,6 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _error = null;
     try {
-      if (_isDevMode) {
-        _isDevMode = false;
-        _user = null;
-        _firebaseUser = null;
-        notifyListeners();
-        return;
-      }
       await _authService.logout();
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');

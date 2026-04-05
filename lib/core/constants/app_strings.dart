@@ -3,207 +3,197 @@ enum AppLanguage { ru, tj, en }
 abstract final class AppStrings {
   static const Map<String, Map<String, String>> all = {
     'ru': {
-      'appName': 'UniBook',
-      'appTitle': 'UniBook — Библиотека',
+      'appName': 'ДДМИТ',
+      'productName': 'UniBook',
+      'splashSubtitle': 'UniBook',
+      'welcome': 'Добро пожаловать',
+      'guest': 'Гость',
+      'home': 'Главная',
+      'catalog': 'Каталог',
+      'books': 'Книги',
+      'departments': 'Кафедры',
+      'favorites': 'Избранное',
+      'profile': 'Профиль',
+      'search': 'Поиск',
+      'searchHint': 'Поиск книг, авторов, кафедр',
+      'newArrivals': 'Новые поступления',
+      'quickAccess': 'Быстрый доступ',
+      'openLibrary': 'Открыть библиотеку',
+      'theme': 'Тема',
+      'darkTheme': 'Тёмная',
+      'lightTheme': 'Светлая',
+      'language': 'Язык',
+      'settings': 'Настройки',
+      'loading': 'Загрузка...',
+      'emptyBooks': 'Книги пока не добавлены',
+      'emptyDepartments': 'Кафедры не найдены',
+      'errorGeneric': 'Произошла ошибка',
+      'tryAgain': 'Повторить',
+      'adminPanel': 'Панель администратора',
+      'adminLogin': 'Вход администратора',
+      'adminOnlyLoginHint': 'Только для преподавателя/администратора',
       'login': 'Войти',
-      'register': 'Зарегистрироваться',
+      'logout': 'Выйти',
       'email': 'Email',
       'password': 'Пароль',
       'forgotPassword': 'Забыли пароль?',
-      'name': 'Имя',
-      'role': 'Роль',
-      'student': 'Студент',
-      'teacher': 'Учитель',
-      'admin': 'Администратор',
-      'teacherCode': 'Код учителя',
-      'department': 'Кафедра',
-      'searchBooks': 'Поиск книг',
-      'searchUsers': 'Поиск пользователей',
-      'noInternet': 'Нет подключения к интернету',
-      'offlineMode': 'Офлайн режим',
+      'resetPasswordSent': 'Проверьте почту для сброса пароля',
       'invalidCredentials': 'Неверный email или пароль',
-      'emailExists': 'Пользователь с таким email уже существует',
-      'weakPassword': 'Пароль должен содержать минимум 6 символов',
-      'invalidTeacherCode': 'Неверный код учителя',
-      'fileTooLarge': 'Файл слишком большой. Максимум 50 МБ',
-      'uploadFailed': 'Ошибка загрузки. Попробуйте снова',
-      'uploadSuccess': 'Книга успешно загружена',
-      'logout': 'Выйти',
-      'cancel': 'Отмена',
-      'save': 'Сохранить',
-      'delete': 'Удалить',
-      'edit': 'Редактировать',
-      'myBooks': 'Мои книги',
-      'adminPanel': 'Панель администратора',
-      'settings': 'Настройки',
-      'users': 'Пользователи',
-      'departments': 'Кафедры',
-      'statistics': 'Статистика',
-      'addBook': 'Добавить книгу',
-      'title': 'Название',
+      'adminAccessDenied': 'Доступ только для администратора/преподавателя',
+      'department': 'Кафедра',
       'author': 'Автор',
       'year': 'Год',
       'subject': 'Предмет',
-      'pickPdf': 'Выбрать PDF',
-      'pickCover': 'Выбрать обложку',
-      'requiredField': 'Заполните поле',
+      'bookCount': 'книг',
+      'teacher': 'Преподаватель',
+      'administrator': 'Администратор',
+      'student': 'Студент',
+      'notAuthorized': 'Не авторизован',
+      'signInToAdmin': 'Войти в админ-зону',
+      'changeTheme': 'Сменить тему',
+      'changeLanguage': 'Сменить язык',
+      'openAdminPanel': 'Открыть админ-панель',
+      'logoutConfirm': 'Выйти из аккаунта?',
+      'cancel': 'Отмена',
+      'uploadBook': 'Добавить книгу',
+      'saveBook': 'Сохранить книгу',
+      'bookInfo': 'Информация о книге',
+      'files': 'Файлы',
+      'pickPdf': 'Выбрать PDF файл',
+      'maxFileSize': 'Максимум 50 МБ',
+      'coverOptional': 'Добавить обложку (необязательно)',
+      'coverSelected': 'Обложка выбрана',
+      'bookUploaded': 'Книга успешно загружена',
     },
     'tj': {
-      'appName': 'UniBook',
-      'appTitle': 'UniBook — Китобхона',
+      'appName': 'ДДМИТ',
+      'productName': 'UniBook',
+      'splashSubtitle': 'UniBook',
+      'welcome': 'Хуш омадед',
+      'guest': 'Меҳмон',
+      'home': 'Асосӣ',
+      'catalog': 'Каталог',
+      'books': 'Китобҳо',
+      'departments': 'Кафедраҳо',
+      'favorites': 'Дӯстдоштаҳо',
+      'profile': 'Профил',
+      'search': 'Ҷустуҷӯ',
+      'searchHint': 'Ҷустуҷӯи китоб, муаллиф, кафедра',
+      'newArrivals': 'Китобҳои нав',
+      'quickAccess': 'Дастрасии зуд',
+      'openLibrary': 'Кушодани китобхона',
+      'theme': 'Мавзӯъ',
+      'darkTheme': 'Торик',
+      'lightTheme': 'Равшан',
+      'language': 'Забон',
+      'settings': 'Танзимот',
+      'loading': 'Боркунӣ...',
+      'emptyBooks': 'Ҳоло китоб нест',
+      'emptyDepartments': 'Кафедра ёфт нашуд',
+      'errorGeneric': 'Хатогӣ рух дод',
+      'tryAgain': 'Боз кӯшиш кунед',
+      'adminPanel': 'Панели админ',
+      'adminLogin': 'Вуруди админ',
+      'adminOnlyLoginHint': 'Танҳо барои омӯзгор/админ',
       'login': 'Ворид шудан',
-      'register': 'Сабти ном',
+      'logout': 'Баромадан',
       'email': 'Email',
       'password': 'Рамз',
       'forgotPassword': 'Рамзро фаромӯш кардед?',
-      'name': 'Ном',
-      'role': 'Нақш',
-      'student': 'Донишҷӯ',
-      'teacher': 'Омӯзгор',
-      'admin': 'Администратор',
-      'teacherCode': 'Рамзи омӯзгор',
-      'department': 'Кафедра',
-      'searchBooks': 'Ҷустуҷӯи китобҳо',
-      'searchUsers': 'Ҷустуҷӯи корбарон',
-      'noInternet': 'Интернет нест',
-      'offlineMode': 'Ҳолати офлайн',
+      'resetPasswordSent': 'Почтаро барои барқарорсозӣ санҷед',
       'invalidCredentials': 'Email ё рамз нодуруст аст',
-      'emailExists': 'Корбар бо чунин email аллакай ҳаст',
-      'weakPassword': 'Рамз бояд ҳадди ақал 6 аломат дошта бошад',
-      'invalidTeacherCode': 'Рамзи омӯзгор нодуруст аст',
-      'fileTooLarge': 'Файл хеле калон аст. Ҳадди аксар 50 МБ',
-      'uploadFailed': 'Хатои боргузорӣ. Боз кӯшиш кунед',
-      'uploadSuccess': 'Китоб бомуваффақият боргузорӣ шуд',
-      'logout': 'Баромадан',
-      'cancel': 'Бекор кардан',
-      'save': 'Нигоҳ доштан',
-      'delete': 'Ҳазф кардан',
-      'edit': 'Таҳрир кардан',
-      'myBooks': 'Китобҳои ман',
-      'adminPanel': 'Панели админ',
-      'settings': 'Танзимот',
-      'users': 'Корбарон',
-      'departments': 'Кафедраҳо',
-      'statistics': 'Омор',
-      'addBook': 'Иловаи китоб',
-      'title': 'Ном',
+      'adminAccessDenied': 'Дастрасӣ танҳо барои омӯзгор/админ',
+      'department': 'Кафедра',
       'author': 'Муаллиф',
       'year': 'Сол',
       'subject': 'Фан',
+      'bookCount': 'китоб',
+      'teacher': 'Омӯзгор',
+      'administrator': 'Админ',
+      'student': 'Донишҷӯ',
+      'notAuthorized': 'Ворид нашудааст',
+      'signInToAdmin': 'Ба админ-зона ворид шавед',
+      'changeTheme': 'Иваз кардани мавзӯъ',
+      'changeLanguage': 'Иваз кардани забон',
+      'openAdminPanel': 'Кушодани панели админ',
+      'logoutConfirm': 'Аз аккаунт бароед?',
+      'cancel': 'Бекор кардан',
+      'uploadBook': 'Иловаи китоб',
+      'saveBook': 'Сабти китоб',
+      'bookInfo': 'Маълумот дар бораи китоб',
+      'files': 'Файлҳо',
       'pickPdf': 'Интихоби PDF',
-      'pickCover': 'Интихоби муқова',
-      'requiredField': 'Майдонро пур кунед',
+      'maxFileSize': 'Ҳадди аксар 50 МБ',
+      'coverOptional': 'Иловаи муқова (ихтиёрӣ)',
+      'coverSelected': 'Муқова интихоб шуд',
+      'bookUploaded': 'Китоб бомуваффақият бор шуд',
     },
     'en': {
-      'appName': 'UniBook',
-      'appTitle': 'UniBook — Library',
+      'appName': 'DDMIT',
+      'productName': 'UniBook',
+      'splashSubtitle': 'UniBook',
+      'welcome': 'Welcome',
+      'guest': 'Guest',
+      'home': 'Home',
+      'catalog': 'Catalog',
+      'books': 'Books',
+      'departments': 'Departments',
+      'favorites': 'Favorites',
+      'profile': 'Profile',
+      'search': 'Search',
+      'searchHint': 'Search books, authors, departments',
+      'newArrivals': 'New arrivals',
+      'quickAccess': 'Quick access',
+      'openLibrary': 'Open library',
+      'theme': 'Theme',
+      'darkTheme': 'Dark',
+      'lightTheme': 'Light',
+      'language': 'Language',
+      'settings': 'Settings',
+      'loading': 'Loading...',
+      'emptyBooks': 'No books yet',
+      'emptyDepartments': 'No departments found',
+      'errorGeneric': 'Something went wrong',
+      'tryAgain': 'Try again',
+      'adminPanel': 'Admin panel',
+      'adminLogin': 'Admin login',
+      'adminOnlyLoginHint': 'Teacher/admin access only',
       'login': 'Log in',
-      'register': 'Register',
+      'logout': 'Log out',
       'email': 'Email',
       'password': 'Password',
       'forgotPassword': 'Forgot password?',
-      'name': 'Name',
-      'role': 'Role',
-      'student': 'Student',
-      'teacher': 'Teacher',
-      'admin': 'Administrator',
-      'teacherCode': 'Teacher code',
-      'department': 'Department',
-      'searchBooks': 'Search books',
-      'searchUsers': 'Search users',
-      'noInternet': 'No internet connection',
-      'offlineMode': 'Offline mode',
+      'resetPasswordSent': 'Check your email to reset password',
       'invalidCredentials': 'Invalid email or password',
-      'emailExists': 'A user with this email already exists',
-      'weakPassword': 'Password must contain at least 6 characters',
-      'invalidTeacherCode': 'Invalid teacher code',
-      'fileTooLarge': 'File is too large. Max 50 MB',
-      'uploadFailed': 'Upload failed. Please try again',
-      'uploadSuccess': 'Book uploaded successfully',
-      'logout': 'Log out',
-      'cancel': 'Cancel',
-      'save': 'Save',
-      'delete': 'Delete',
-      'edit': 'Edit',
-      'myBooks': 'My books',
-      'adminPanel': 'Admin panel',
-      'settings': 'Settings',
-      'users': 'Users',
-      'departments': 'Departments',
-      'statistics': 'Statistics',
-      'addBook': 'Add book',
-      'title': 'Title',
+      'adminAccessDenied': 'Access is restricted to teacher/admin',
+      'department': 'Department',
       'author': 'Author',
       'year': 'Year',
       'subject': 'Subject',
-      'pickPdf': 'Pick PDF',
-      'pickCover': 'Pick cover',
-      'requiredField': 'Fill in the field',
+      'bookCount': 'books',
+      'teacher': 'Teacher',
+      'administrator': 'Administrator',
+      'student': 'Student',
+      'notAuthorized': 'Not signed in',
+      'signInToAdmin': 'Sign in to admin area',
+      'changeTheme': 'Change theme',
+      'changeLanguage': 'Change language',
+      'openAdminPanel': 'Open admin panel',
+      'logoutConfirm': 'Log out from account?',
+      'cancel': 'Cancel',
+      'uploadBook': 'Add book',
+      'saveBook': 'Save book',
+      'bookInfo': 'Book information',
+      'files': 'Files',
+      'pickPdf': 'Pick PDF file',
+      'maxFileSize': 'Max 50 MB',
+      'coverOptional': 'Add cover (optional)',
+      'coverSelected': 'Cover selected',
+      'bookUploaded': 'Book uploaded successfully',
     },
   };
 
-  /// Returns a localized string by key for [languageCode].
-  ///
-  /// Use `Localizations.localeOf(context).languageCode` (or your stored user
-  /// preference) as [languageCode] in UI code.
-  ///
-  /// Fallback order:
-  /// 1) key lookup in requested language map
-  /// 2) key lookup in Russian (`ru`) map
-  /// 3) the raw key itself (if both lookups fail)
-  ///
-  /// If [languageCode] is invalid or unsupported, the method falls back to
-  /// Russian automatically.
   static String translate(String key, {String languageCode = 'ru'}) {
     return all[languageCode]?[key] ?? all['ru']?[key] ?? key;
   }
-
-  static String t(String key, {String languageCode = 'ru'}) {
-    return translate(key, languageCode: languageCode);
-  }
-
-  static const appName = 'UniBook';
-  static const appTitle = 'UniBook — Библиотека';
-  static const login = 'Войти';
-  static const register = 'Зарегистрироваться';
-  static const email = 'Email';
-  static const password = 'Пароль';
-  static const forgotPassword = 'Забыли пароль?';
-  static const name = 'Имя';
-  static const role = 'Роль';
-  static const student = 'Студент';
-  static const teacher = 'Учитель';
-  static const admin = 'Администратор';
-  static const teacherCode = 'Код учителя';
-  static const department = 'Кафедра';
-  static const searchBooks = 'Поиск книг';
-  static const searchUsers = 'Поиск пользователей';
-  static const noInternet = 'Нет подключения к интернету';
-  static const offlineMode = 'Офлайн режим';
-  static const invalidCredentials = 'Неверный email или пароль';
-  static const emailExists = 'Пользователь с таким email уже существует';
-  static const weakPassword = 'Пароль должен содержать минимум 6 символов';
-  static const invalidTeacherCode = 'Неверный код учителя';
-  static const fileTooLarge = 'Файл слишком большой. Максимум 50 МБ';
-  static const uploadFailed = 'Ошибка загрузки. Попробуйте снова';
-  static const uploadSuccess = 'Книга успешно загружена';
-  static const logout = 'Выйти';
-  static const cancel = 'Отмена';
-  static const save = 'Сохранить';
-  static const delete = 'Удалить';
-  static const edit = 'Редактировать';
-  static const myBooks = 'Мои книги';
-  static const adminPanel = 'Панель администратора';
-  static const settings = 'Настройки';
-  static const users = 'Пользователи';
-  static const departments = 'Кафедры';
-  static const statistics = 'Статистика';
-  static const addBook = 'Добавить книгу';
-  static const title = 'Название';
-  static const author = 'Автор';
-  static const year = 'Год';
-  static const subject = 'Предмет';
-  static const pickPdf = 'Выбрать PDF';
-  static const pickCover = 'Выбрать обложку';
-  static const requiredField = 'Заполните поле';
 }
