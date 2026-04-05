@@ -16,6 +16,7 @@ abstract final class AppColors {
   static const Color darkBackgroundEnd = Color(0xFF0D0015);
   static const Color darkGlassCard = Color(0x14FFFFFF);
   static const Color darkGlassBorder = Color(0x26FFFFFF);
+  static const Color darkAccentDeep = Color(0xFF4C1D95);
   static const Color darkTextPrimary = Color(0xFFFFFFFF);
   static const Color darkTextSecondary = Color(0xB3FFFFFF);
   static const Color darkInputBg = Color(0x0DFFFFFF);

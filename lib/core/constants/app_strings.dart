@@ -142,6 +142,12 @@ abstract final class AppStrings {
     },
   };
 
+  /// Returns a localized string by key for [languageCode].
+  ///
+  /// Fallback order:
+  /// 1) requested language map
+  /// 2) Russian (`ru`) map
+  /// 3) the raw key itself
   static String t(String key, {String languageCode = 'ru'}) {
     return all[languageCode]?[key] ?? all['ru']?[key] ?? key;
   }

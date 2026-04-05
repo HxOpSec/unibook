@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:unibook/core/constants/app_colors.dart';
 
 class AnimatedBackground extends StatefulWidget {
   const AnimatedBackground({super.key});
@@ -49,21 +50,21 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
           begin: const Offset(-40, -20),
           end: const Offset(10, 35),
           size: 300,
-          color: const Color(0xFF6D28D9).withOpacity(0.3),
+          color: AppColors.primaryDark.withOpacity(0.3),
         ),
         _buildCircle(
           controller: _controller2,
           begin: const Offset(220, 520),
           end: const Offset(160, 450),
           size: 350,
-          color: const Color(0xFF4C1D95).withOpacity(0.3),
+          color: AppColors.darkAccentDeep.withOpacity(0.3),
         ),
         _buildCircle(
           controller: _controller3,
           begin: const Offset(110, 220),
           end: const Offset(180, 270),
           size: 200,
-          color: const Color(0xFF7C3AED).withOpacity(0.2),
+          color: AppColors.lightAccent.withOpacity(0.2),
         ),
       ],
     );
