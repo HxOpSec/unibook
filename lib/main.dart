@@ -25,6 +25,7 @@ Future<void> main() async {
 }
 
 Future<void> seedDepartments() async {
+  const _maxBatchSize = 500;
   final firestore = FirebaseFirestore.instance;
   final snapshot = await firestore.collection('departments').count().get();
   final currentCount = snapshot.count ?? 0;
@@ -37,7 +38,7 @@ Future<void> seedDepartments() async {
   for (final doc in existing.docs) {
     batch.delete(doc.reference);
     operations++;
-    if (operations >= 450) {
+    if (operations >= _maxBatchSize) {
       await batch.commit();
       batch = firestore.batch();
       operations = 0;
@@ -60,7 +61,7 @@ Future<void> seedDepartments() async {
       'createdAt': FieldValue.serverTimestamp(),
     });
     operations++;
-    if (operations >= 450) {
+    if (operations >= _maxBatchSize) {
       await batch.commit();
       batch = firestore.batch();
       operations = 0;

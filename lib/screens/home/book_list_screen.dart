@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/constants/app_routes.dart';
+import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/books_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
@@ -251,7 +252,7 @@ class _BookListScreenState extends State<BookListScreen> {
     );
   }
 
-  void _showBookActions(BuildContext context, dynamic book) {
+  void _showBookActions(BuildContext context, BookModel book) {
     showModalBottomSheet<void>(
       context: context,
       builder: (_) {

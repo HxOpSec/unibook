@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           leading: Padding(
             padding: const EdgeInsets.only(left: 8),
             child: GestureDetector(
-              onTap: () => _showAboutDialog(context),
+              onTap: () => _showTgfeuAboutDialog(context),
               child: const Center(child: TgfeuLogo(size: 36, textSize: 9, showStar: false)),
             ),
           ),
@@ -476,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
+  void _showTgfeuAboutDialog(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(

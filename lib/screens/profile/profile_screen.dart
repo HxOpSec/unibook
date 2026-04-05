@@ -148,11 +148,12 @@ class ProfileScreen extends StatelessWidget {
                     : 0;
                 final departments =
                     snapshot.hasData ? snapshot.data![1] as List<dynamic> : <dynamic>[];
-                final deptName = departments
+                final deptNames = departments
                     .where((d) => d.id == user.departmentId)
-                    .map((d) => d.name)
-                    .cast<String>()
-                    .firstWhere((_) => true, orElse: () => user.departmentId);
+                    .map((d) => d.name as String)
+                    .toList();
+                final deptName =
+                    deptNames.isEmpty ? user.departmentId : deptNames.first;
 
                 final items = <Widget>[
                   _MenuTile(
