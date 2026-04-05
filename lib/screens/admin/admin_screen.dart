@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/constants/app_routes.dart';
+import 'package:unibook/core/utils/snackbar_utils.dart';
+import 'package:unibook/models/book_model.dart';
 import 'package:unibook/services/firestore_service.dart';
+import 'package:unibook/widgets/animated_list_item.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -19,7 +23,7 @@ class _AdminScreenState extends State<AdminScreen> {
     _statsFuture = context.read<FirestoreService>().getStats();
   }
 
-  void _refreshStats() {
+  void _refresh() {
     setState(() {
       _statsFuture = context.read<FirestoreService>().getStats();
     });
@@ -28,7 +32,15 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Панель администратора')),
+      appBar: AppBar(
+        title: const Text('Панель администратора'),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [AppColors.primaryDark, AppColors.primary]),
+          ),
+        ),
+        actions: const [Padding(padding: EdgeInsets.only(right: 12), child: Icon(Icons.admin_panel_settings))],
+      ),
       body: FutureBuilder<Map<String, int>>(
         future: _statsFuture,
         builder: (context, snapshot) {
@@ -36,88 +48,118 @@ class _AdminScreenState extends State<AdminScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
+              GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _StatCard(title: 'Книги', value: stats['books'] ?? 0),
-                  _StatCard(title: 'Пользователи', value: stats['users'] ?? 0),
-                  _StatCard(title: 'Кафедры', value: stats['departments'] ?? 0),
+                  _AdminStatCard(
+                    icon: Icons.menu_book_rounded,
+                    color: AppColors.primary,
+                    label: 'Всего книг',
+                    value: stats['books'] ?? 0,
+                  ),
+                  _AdminStatCard(
+                    icon: Icons.people_alt_outlined,
+                    color: AppColors.success,
+                    label: 'Всего пользователей',
+                    value: stats['users'] ?? 0,
+                  ),
+                  _AdminStatCard(
+                    icon: Icons.school_outlined,
+                    color: Colors.purple,
+                    label: 'Кафедры',
+                    value: stats['departments'] ?? 0,
+                  ),
+                  _AdminStatCard(
+                    icon: Icons.calendar_month_outlined,
+                    color: Colors.orange,
+                    label: 'Книг за месяц',
+                    value: stats['books'] ?? 0,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.people_outline),
-                  title: const Text('Управление пользователями'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).pushNamed(AppRoutes.adminUsers),
-                ),
+              const Text(
+                'Быстрые действия',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.account_tree_outlined),
-                  title: const Text('Управление кафедрами'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () =>
-                      Navigator.of(context).pushNamed(AppRoutes.adminDepartments),
-                ),
+              const SizedBox(height: 8),
+              _ActionTile(
+                icon: Icons.people_outline,
+                title: 'Управление пользователями',
+                onTap: () => Navigator.of(context).pushNamed(AppRoutes.adminUsers),
               ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.verified_user_outlined),
-                  title: const Text('Код учителя'),
-                  subtitle: const Text('Изменить код верификации для регистрации учителей'),
-                  onTap: () async {
-                    final controller = TextEditingController();
-                    final newCode = await showDialog<String>(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Новый код учителя'),
-                        content: TextField(controller: controller),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Отмена'),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(context, controller.text),
-                            child: const Text('Сохранить'),
-                          ),
-                        ],
+              _ActionTile(
+                icon: Icons.account_tree_outlined,
+                title: 'Управление кафедрами',
+                onTap: () => Navigator.of(context).pushNamed(AppRoutes.adminDepartments),
+              ),
+              _ActionTile(
+                icon: Icons.vpn_key_outlined,
+                title: 'Установить код учителя',
+                onTap: () async {
+                  final controller = TextEditingController();
+                  final code = await showDialog<String>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Код учителя'),
+                      content: TextField(controller: controller),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
+                        ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Сохранить')),
+                      ],
+                    ),
+                  );
+                  if (code == null || code.trim().isEmpty) return;
+                  await context.read<FirestoreService>().setTeacherCode(code);
+                  if (context.mounted) showSuccess(context, 'Код учителя обновлён');
+                },
+              ),
+              _ActionTile(
+                icon: Icons.library_books_outlined,
+                title: 'Все книги',
+                onTap: _refresh,
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Последние книги',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              StreamBuilder<List<BookModel>>(
+                stream: context.read<FirestoreService>().streamRecentBooks(limit: 10),
+                builder: (context, snapshot) {
+                  final books = snapshot.data ?? [];
+                  if (books.isEmpty) {
+                    return const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('Нет последних поступлений'),
                       ),
                     );
-                    if (newCode == null || newCode.trim().isEmpty) return;
-                    await context.read<FirestoreService>().setTeacherCode(newCode);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('Код учителя обновлён'),
+                  }
+                  return Column(
+                    children: List.generate(books.length, (index) {
+                      final book = books[index];
+                      return AnimatedListItem(
+                        index: index,
+                        child: Card(
+                          child: ListTile(
+                            title: Text(book.title),
+                            subtitle: Text('${book.author} · ${book.uploaderName}'),
+                            trailing: Text(
+                              _timeAgo(book.createdAt),
+                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                          ),
                         ),
                       );
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Недавняя активность',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 10),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.timeline),
-                  title: const Text('Обновите данные для просмотра последних действий'),
-                  trailing: IconButton(
-                    onPressed: _refreshStats,
-                    icon: const Icon(Icons.refresh),
-                  ),
-                ),
+                    }),
+                  );
+                },
               ),
             ],
           );
@@ -125,36 +167,72 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
+
+  String _timeAgo(DateTime dt) {
+    final diff = DateTime.now().difference(dt);
+    if (diff.inDays > 0) return '${diff.inDays}д';
+    if (diff.inHours > 0) return '${diff.inHours}ч';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}м';
+    return 'только что';
+  }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({required this.title, required this.value});
+class _AdminStatCard extends StatelessWidget {
+  const _AdminStatCard({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+  });
 
-  final String title;
+  final IconData icon;
+  final Color color;
+  final String label;
   final int value;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 44) / 2,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Text(
-                '$value',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 28, color: color),
+          const Spacer(),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: value.toDouble()),
+            duration: const Duration(milliseconds: 1000),
+            builder: (_, v, __) => Text(
+              v.round().toString(),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            ),
           ),
-        ),
+          Text(label, style: const TextStyle(color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({required this.icon, required this.title, this.onTap});
+
+  final IconData icon;
+  final String title;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.primary),
+        title: Text(title),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }

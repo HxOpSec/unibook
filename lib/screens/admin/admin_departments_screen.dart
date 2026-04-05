@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/services/firestore_service.dart';
+import 'package:unibook/widgets/animated_list_item.dart';
 
 class AdminDepartmentsScreen extends StatelessWidget {
   const AdminDepartmentsScreen({super.key});
@@ -68,42 +69,48 @@ class AdminDepartmentsScreen extends StatelessWidget {
             itemCount: departments.length,
             itemBuilder: (context, index) {
               final department = departments[index];
-              return Card(
-                child: ListTile(
-                  title: Text(department.name),
-                  subtitle: Text('Код: ${department.code} • Книг: ${department.bookCount}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => _showForm(context, department: department),
-                        icon: const Icon(Icons.edit_outlined),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                  title: const Text('Удалить кафедру?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: const Text('Отмена'),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () => Navigator.pop(context, true),
-                                      child: const Text('Удалить'),
-                                    ),
-                                  ],
-                                ),
-                              ) ??
-                              false;
-                          if (!confirm) return;
-                          await service.deleteDepartment(department.id);
-                        },
-                        icon: const Icon(Icons.delete_outline),
-                      ),
-                    ],
+              return AnimatedListItem(
+                index: index,
+                child: Card(
+                  child: ListTile(
+                    title: Text(department.name),
+                    subtitle: Text(
+                      'Код: ${department.code} • ${department.facultyName}\n'
+                      '${department.building} • ${department.room} • Книг: ${department.bookCount}',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () => _showForm(context, department: department),
+                          icon: const Icon(Icons.edit_outlined),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Text('Удалить кафедру?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, false),
+                                        child: const Text('Отмена'),
+                                      ),
+                                      FilledButton(
+                                        onPressed: () => Navigator.pop(context, true),
+                                        child: const Text('Удалить'),
+                                      ),
+                                    ],
+                                  ),
+                                ) ??
+                                false;
+                            if (!confirm) return;
+                            await service.deleteDepartment(department.id);
+                          },
+                          icon: const Icon(Icons.delete_outline),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

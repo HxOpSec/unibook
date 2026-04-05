@@ -12,7 +12,9 @@ class AuthProvider extends ChangeNotifier {
   static const _devUserEmail = 'dev@tgfeu.tj';
   static const _devUserRole = 'admin';
   static const _devDepartmentId = 'dept_finance';
-  AuthProvider(this._authService, this._firestoreService) {
+  AuthProvider([AuthService? authService, FirestoreService? firestoreService])
+      : _authService = authService ?? AuthService(),
+        _firestoreService = firestoreService ?? FirestoreService() {
     initialize();
   }
 

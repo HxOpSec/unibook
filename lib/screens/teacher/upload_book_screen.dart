@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:unibook/core/constants/app_strings.dart';
+import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/utils/file_utils.dart';
+import 'package:unibook/core/utils/snackbar_utils.dart';
 import 'package:unibook/core/utils/validators.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/upload_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
-import 'package:unibook/widgets/custom_text_field.dart';
 
 class UploadBookScreen extends StatefulWidget {
   const UploadBookScreen({super.key});
@@ -29,6 +29,14 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
   File? _cover;
   String? _departmentId;
 
+  bool get _canSave =>
+      _titleCtrl.text.trim().isNotEmpty &&
+      _authorCtrl.text.trim().isNotEmpty &&
+      _yearCtrl.text.trim().isNotEmpty &&
+      _subjectCtrl.text.trim().isNotEmpty &&
+      _departmentId != null &&
+      _pdf != null;
+
   @override
   void dispose() {
     _titleCtrl.dispose();
@@ -43,9 +51,7 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
     if (!mounted || file == null) return;
     final valid = await FileUtils.isPdfSizeValid(file);
     if (!valid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: Colors.red, content: Text(AppStrings.fileTooLarge)),
-      );
+      showError(context, 'Файл слишком большой. Максимум 50 МБ');
       return;
     }
     setState(() => _pdf = file);
@@ -59,17 +65,11 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() || _pdf == null || _departmentId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text('Заполните форму и выберите PDF'),
-        ),
-      );
+      showError(context, 'Заполните форму и выберите PDF');
       return;
     }
 
-    final auth = context.read<AuthProvider>();
-    final uploader = auth.user;
+    final uploader = context.read<AuthProvider>().user;
     if (uploader == null) return;
 
     final ok = await context.read<UploadProvider>().uploadBook(
@@ -86,16 +86,11 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
 
     if (!mounted) return;
     if (!ok) {
-      final error = context.read<UploadProvider>().error ?? AppStrings.uploadFailed;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, content: Text(error)),
-      );
+      showError(context, context.read<UploadProvider>().error ?? 'Ошибка загрузки');
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(backgroundColor: Colors.green, content: Text(AppStrings.uploadSuccess)),
-    );
+    showSuccess(context, 'Книга успешно загружена');
     Navigator.of(context).pop();
   }
 
@@ -103,7 +98,14 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
   Widget build(BuildContext context) {
     final upload = context.watch<UploadProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.addBook)),
+      appBar: AppBar(
+        title: const Text('Добавить книгу'),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [AppColors.primaryDark, AppColors.primary]),
+          ),
+        ),
+      ),
       body: FutureBuilder<List<DepartmentModel>>(
         future: context.read<FirestoreService>().getDepartments(),
         builder: (context, snapshot) {
@@ -114,92 +116,179 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  CustomTextField(
-                    controller: _titleCtrl,
-                    label: AppStrings.title,
-                    validator: Validators.requiredField,
-                  ),
-                  const SizedBox(height: 10),
-                  CustomTextField(
-                    controller: _authorCtrl,
-                    label: AppStrings.author,
-                    validator: Validators.requiredField,
-                  ),
-                  const SizedBox(height: 10),
-                  CustomTextField(
-                    controller: _yearCtrl,
-                    label: AppStrings.year,
-                    keyboardType: TextInputType.number,
-                    validator: Validators.year,
-                  ),
-                  const SizedBox(height: 10),
-                  CustomTextField(
-                    controller: _subjectCtrl,
-                    label: AppStrings.subject,
-                    validator: Validators.requiredField,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: _departmentId,
-                    items: departments
-                        .map(
-                          (d) => DropdownMenuItem(
-                            value: d.id,
-                            child: Text(d.name),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => setState(() => _departmentId = v),
-                    decoration: const InputDecoration(labelText: AppStrings.department),
+                  _SectionCard(
+                    title: 'Информация о книге',
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _titleCtrl,
+                          onChanged: (_) => setState(() {}),
+                          validator: Validators.requiredField,
+                          decoration: const InputDecoration(labelText: 'Название*'),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _authorCtrl,
+                          onChanged: (_) => setState(() {}),
+                          validator: Validators.requiredField,
+                          decoration: const InputDecoration(labelText: 'Автор*'),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _yearCtrl,
+                          keyboardType: TextInputType.number,
+                          onChanged: (_) => setState(() {}),
+                          validator: Validators.year,
+                          decoration: const InputDecoration(labelText: 'Год издания*'),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _subjectCtrl,
+                          onChanged: (_) => setState(() {}),
+                          validator: Validators.requiredField,
+                          decoration: const InputDecoration(labelText: 'Предмет*'),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _pickPdf,
-                          icon: const Icon(Icons.picture_as_pdf),
-                          label: Text(_pdf == null ? AppStrings.pickPdf : 'PDF выбран'),
-                        ),
-                      ),
-                    ],
+                  _SectionCard(
+                    title: 'Кафедра',
+                    child: DropdownButtonFormField<String>(
+                      value: _departmentId,
+                      onChanged: (v) => setState(() => _departmentId = v),
+                      validator: Validators.requiredField,
+                      items: departments
+                          .map(
+                            (d) => DropdownMenuItem(
+                              value: d.id,
+                              child: Text('${d.name} — ${d.facultyName}'),
+                            ),
+                          )
+                          .toList(),
+                      decoration: const InputDecoration(labelText: 'Кафедра'),
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _pickCover,
-                          icon: const Icon(Icons.image_outlined),
-                          label: Text(_cover == null ? AppStrings.pickCover : 'Обложка выбрана'),
+                  const SizedBox(height: 12),
+                  _SectionCard(
+                    title: 'Файлы',
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: _pickPdf,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _pdf == null ? AppColors.primary : AppColors.success,
+                                style: BorderStyle.solid,
+                              ),
+                              color: _pdf == null
+                                  ? AppColors.primary.withOpacity(0.04)
+                                  : AppColors.success.withOpacity(0.08),
+                            ),
+                            child: _pdf == null
+                                ? const Column(
+                                    children: [
+                                      Icon(Icons.upload_file, size: 32, color: AppColors.primary),
+                                      SizedBox(height: 6),
+                                      Text('Выбрать PDF файл'),
+                                      SizedBox(height: 2),
+                                      Text('Максимум 50 МБ',
+                                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      const Icon(Icons.check_circle,
+                                          color: AppColors.success, size: 28),
+                                      const SizedBox(height: 6),
+                                      Text(_pdf!.path.split('/').last, maxLines: 1),
+                                      Text('${(_pdf!.lengthSync() / 1024 / 1024).toStringAsFixed(2)} МБ'),
+                                      const Text('Изменить',
+                                          style: TextStyle(
+                                            color: AppColors.primary,
+                                            decoration: TextDecoration.underline,
+                                          )),
+                                    ],
+                                  ),
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: OutlinedButton.icon(
+                            onPressed: _pickCover,
+                            icon: const Icon(Icons.image_outlined),
+                            label: Text(_cover == null
+                                ? 'Добавить обложку (необязательно)'
+                                : 'Обложка выбрана'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   if (upload.isUploading)
                     Column(
                       children: [
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: upload.progress),
-                          duration: const Duration(milliseconds: 250),
-                          builder: (_, value, __) => LinearProgressIndicator(value: value),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(value: upload.progress),
                         ),
-                        const SizedBox(height: 8),
-                        Text('${(upload.progress * 100).toStringAsFixed(0)}%'),
+                        const SizedBox(height: 6),
+                        Text('Загрузка PDF... ${(upload.progress * 100).round()}%'),
                         const SizedBox(height: 8),
                       ],
                     ),
-                  FilledButton(
-                    onPressed: upload.isUploading ? null : _submit,
-                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
-                    child: const Text(AppStrings.save),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: upload.isUploading || !_canSave ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text('Сохранить книгу'),
+                    ),
                   ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 10),
+            child,
+          ],
+        ),
       ),
     );
   }
