@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Set<String> _favorites = <String>{};
 
   List<DepartmentModel> _departments = const [];
+  Map<String, DepartmentModel> _departmentById = const {};
   List<BookModel> _recentBooks = const [];
   bool _loading = true;
 
@@ -45,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
     setState(() {
       _departments = departments;
+      _departmentById = {for (final d in departments) d.id: d};
       _recentBooks = books;
       _loading = false;
     });
@@ -237,9 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   (book) => BookCard(
                                     margin: const EdgeInsets.symmetric(vertical: 5),
                                     book: book,
-                                    department: _departments.where((d) => d.id == book.departmentId).isEmpty
-                                        ? null
-                                        : _departments.firstWhere((d) => d.id == book.departmentId),
+                                    department: _departmentById[book.departmentId],
                                     isFavorite: _favorites.contains(book.id),
                                     onFavoriteTap: () {
                                       setState(() {

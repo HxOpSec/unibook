@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:unibook/core/constants/app_strings.dart';
 import 'package:unibook/models/user_model.dart';
 import 'package:unibook/services/auth_service.dart';
 import 'package:unibook/services/firestore_service.dart';
@@ -56,13 +57,13 @@ class AuthProvider extends ChangeNotifier {
       await _authService.login(email, password);
       final signedUser = _authService.currentUser;
       if (signedUser == null) {
-        throw Exception('Ошибка входа. Попробуйте позже');
+        throw Exception(AppStrings.translate('errorGeneric'));
       }
 
       final profile = await _firestoreService.getUser(signedUser.uid);
       if (profile == null || !(profile.isAdmin || profile.isTeacher)) {
         await _authService.logout();
-        throw Exception('Доступ только для администратора/преподавателя');
+        throw Exception(AppStrings.translate('adminAccessDenied'));
       }
       return true;
     } catch (e) {
