@@ -43,6 +43,11 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final firstColor = isDark ? AppColors.primaryDark : AppColors.lightAccent;
+    final secondColor = isDark ? AppColors.darkAccentDeep : AppColors.primaryLight;
+    final thirdColor = isDark ? AppColors.lightAccent : AppColors.primary;
+
     return Stack(
       children: [
         _buildCircle(
@@ -50,21 +55,21 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
           begin: const Offset(-40, -20),
           end: const Offset(10, 35),
           size: 300,
-          color: AppColors.primaryDark.withOpacity(0.3),
+          color: firstColor.withOpacity(isDark ? 0.3 : 0.18),
         ),
         _buildCircle(
           controller: _controller2,
           begin: const Offset(220, 520),
           end: const Offset(160, 450),
           size: 350,
-          color: AppColors.darkAccentDeep.withOpacity(0.3),
+          color: secondColor.withOpacity(isDark ? 0.3 : 0.2),
         ),
         _buildCircle(
           controller: _controller3,
           begin: const Offset(110, 220),
           end: const Offset(180, 270),
           size: 200,
-          color: AppColors.lightAccent.withOpacity(0.2),
+          color: thirdColor.withOpacity(isDark ? 0.2 : 0.12),
         ),
       ],
     );

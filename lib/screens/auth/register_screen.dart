@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   : (_passwordStrength >= 0.66
                                       ? Colors.orange
                                       : AppColors.error),
-                              backgroundColor: textSecondary.withOpacity(0.2),
+                              backgroundColor: textSecondary.withOpacity(0.35),
                             ),
                           ),
                           const SizedBox(height: 12),

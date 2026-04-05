@@ -24,7 +24,7 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deptColor = department?.colorValue ?? Theme.of(context).colorScheme.primary;
+    final departmentColor = department?.colorValue ?? Theme.of(context).colorScheme.primary;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? Colors.white : const Color(0xFF1A0030);
     final textSecondary = isDark ? Colors.white70 : const Color(0xB31A0030);
@@ -51,7 +51,10 @@ class BookCard extends StatelessWidget {
                         ? Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [deptColor, deptColor.withOpacity(0.7)],
+                                colors: [
+                                  departmentColor,
+                                  departmentColor.withOpacity(0.7),
+                                ],
                               ),
                             ),
                             alignment: Alignment.center,

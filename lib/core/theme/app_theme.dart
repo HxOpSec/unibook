@@ -23,7 +23,6 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor:
           isDark ? AppColors.darkBackgroundStart : AppColors.lightBackgroundStart,
-      fontFamily: 'Roboto',
       textTheme: TextTheme(
         displayLarge: TextStyle(
           fontSize: 32,
