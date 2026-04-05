@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/constants/app_routes.dart';
+import 'package:unibook/widgets/animated_background.dart';
+import 'package:unibook/widgets/glass_card.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
@@ -70,109 +72,147 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundGradient = isDark
+        ? const [
+            AppColors.darkBackgroundStart,
+            AppColors.darkBackgroundMid,
+            AppColors.darkBackgroundEnd,
+          ]
+        : const [
+            AppColors.lightBackgroundStart,
+            AppColors.lightBackgroundMid,
+            AppColors.lightBackgroundEnd,
+          ];
+
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.primaryDark, AppColors.primary, AppColors.primaryLight],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FadeTransition(
-                  opacity: _ringOpacity,
-                  child: ScaleTransition(
-                    scale: _ringScale,
-                    child: SizedBox(
-                      width: 140,
-                      height: 140,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 132,
-                            height: 132,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.gold, width: 3),
-                            ),
-                          ),
-                          FadeTransition(
-                            opacity: _logoTextOpacity,
-                            child: const TgfeuLogo(size: 112, textSize: 22),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: backgroundGradient,
                 ),
-                const SizedBox(height: 20),
-                SlideTransition(
-                  position: _titleSlide,
-                  child: const Text(
-                    'UniBook',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FadeTransition(
-                  opacity: _subtitleOpacity,
-                  child: Text(
-                    'Библиотека ТГФЭУ',
-                    style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SizeTransition(
-                  sizeFactor: _dividerExpand,
-                  axis: Axis.horizontal,
-                  child: Container(
-                    width: 200,
-                    height: 2,
-                    color: AppColors.gold,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                FadeTransition(
-                  opacity: _line1Opacity,
-                  child: Text(
-                    'Таджикский государственный',
-                    style: TextStyle(color: Colors.white.withOpacity(0.82)),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                FadeTransition(
-                  opacity: _line2Opacity,
-                  child: Text(
-                    'финансово-экономический университет',
-                    style: TextStyle(color: Colors.white.withOpacity(0.82)),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                FadeTransition(
-                  opacity: _progressOpacity,
-                  child: const SizedBox(
-                    width: 34,
-                    height: 34,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.gold),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          const Positioned.fill(child: AnimatedBackground()),
+          SafeArea(
+            child: Center(
+              child: GlassCard(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FadeTransition(
+                      opacity: _ringOpacity,
+                      child: ScaleTransition(
+                        scale: _ringScale,
+                        child: SizedBox(
+                          width: 140,
+                          height: 140,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 132,
+                                height: 132,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppColors.gold, width: 3),
+                                ),
+                              ),
+                              FadeTransition(
+                                opacity: _logoTextOpacity,
+                                child: const TgfeuLogo(size: 112, textSize: 22),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SlideTransition(
+                      position: _titleSlide,
+                      child: Text(
+                        'UniBook',
+                        style: TextStyle(
+                          color:
+                              isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    FadeTransition(
+                      opacity: _subtitleOpacity,
+                      child: Text(
+                        'Библиотека ТГФЭУ',
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SizeTransition(
+                      sizeFactor: _dividerExpand,
+                      axis: Axis.horizontal,
+                      child: Container(
+                        width: 200,
+                        height: 2,
+                        color: AppColors.gold,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    FadeTransition(
+                      opacity: _line1Opacity,
+                      child: Text(
+                        'Таджикский государственный',
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    FadeTransition(
+                      opacity: _line2Opacity,
+                      child: Text(
+                        'финансово-экономический университет',
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FadeTransition(
+                      opacity: _progressOpacity,
+                      child: const SizedBox(
+                        width: 34,
+                        height: 34,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.gold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -6,6 +6,8 @@ import 'package:unibook/core/constants/app_routes.dart';
 import 'package:unibook/core/utils/snackbar_utils.dart';
 import 'package:unibook/core/utils/validators.dart';
 import 'package:unibook/providers/auth_provider.dart';
+import 'package:unibook/widgets/animated_background.dart';
+import 'package:unibook/widgets/glass_card.dart';
 import 'package:unibook/widgets/press_scale_button.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
@@ -94,6 +96,20 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final loading = context.watch<AuthProvider>().isLoading;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final backgroundGradient = isDark
+        ? const [
+            AppColors.darkBackgroundStart,
+            AppColors.darkBackgroundMid,
+            AppColors.darkBackgroundEnd,
+          ]
+        : const [
+            AppColors.lightBackgroundStart,
+            AppColors.lightBackgroundMid,
+            AppColors.lightBackgroundEnd,
+          ];
     final cardSlide = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
@@ -103,201 +119,192 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       body: Stack(
         children: [
           Positioned.fill(
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 42,
-                  child: ClipPath(
-                    clipper: _BottomWaveClipper(),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [AppColors.primaryDark, AppColors.primary],
-                        ),
-                      ),
-                      child: const SafeArea(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TgfeuLogo(size: 80, textSize: 16),
-                            SizedBox(height: 14),
-                            Text(
-                              'UniBook',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Библиотека ТГФЭУ',
-                              style: TextStyle(color: Colors.white70, fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: backgroundGradient,
                 ),
-                const Spacer(flex: 58),
-              ],
+              ),
             ),
           ),
-          Positioned.fill(
-            top: MediaQuery.of(context).size.height * 0.36,
-            child: SlideTransition(
-              position: cardSlide,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: AnimatedBuilder(
-                    animation: _shakeController,
-                    builder: (context, child) {
-                      final p = _shakeController.value;
-                      final offset = (p * (1 - p) * _shakeScale) *
-                          _shakeAmplitude *
-                          (p < _shakeMidpoint ? 1 : -1);
-                      return Transform.translate(offset: Offset(offset, 0), child: child);
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Добро пожаловать!',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Войдите в свой аккаунт',
-                          style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
-                        ),
-                        const SizedBox(height: 24),
-                        TextFormField(
-                          controller: _emailCtrl,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: Validators.email,
-                          decoration: const InputDecoration(
-                            labelText: 'Email адрес',
-                            prefixIcon: Icon(Icons.email_outlined, color: AppColors.primary),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordCtrl,
-                          obscureText: _obscure,
-                          validator: Validators.password,
-                          onFieldSubmitted: (_) => _submit(),
-                          decoration: InputDecoration(
-                            labelText: 'Пароль',
-                            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-                            suffixIcon: IconButton(
-                              onPressed: () => setState(() => _obscure = !_obscure),
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
+          const Positioned.fill(child: AnimatedBackground()),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                child: SlideTransition(
+                  position: cardSlide,
+                  child: GlassCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+                    child: Form(
+                      key: _formKey,
+                      child: AnimatedBuilder(
+                        animation: _shakeController,
+                        builder: (context, child) {
+                          final p = _shakeController.value;
+                          final offset = (p * (1 - p) * _shakeScale) *
+                              _shakeAmplitude *
+                              (p < _shakeMidpoint ? 1 : -1);
+                          return Transform.translate(offset: Offset(offset, 0), child: child);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Spacer(),
-                            TextButton(
-                              onPressed: _resetPassword,
-                              child: const Text(
-                                'Забыли пароль?',
-                                style: TextStyle(fontSize: 13),
+                            const Center(child: TgfeuLogo(size: 72, textSize: 14)),
+                            const SizedBox(height: 12),
+                            Center(
+                              child: Text(
+                                'UniBook',
+                                style: TextStyle(
+                                  color: textPrimary,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        PressScaleButton(
-                          onTap: loading ? null : _submit,
-                          child: Container(
-                            width: double.infinity,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              gradient: const LinearGradient(
-                                colors: [AppColors.primary, AppColors.primaryLight],
+                            const SizedBox(height: 2),
+                            Center(
+                              child: Text(
+                                'Библиотека ТГФЭУ',
+                                style: TextStyle(color: textSecondary, fontSize: 14),
                               ),
                             ),
-                            alignment: Alignment.center,
-                            child: loading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Войти',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Добро пожаловать!',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Войдите в свой аккаунт',
+                              style: TextStyle(fontSize: 14, color: textSecondary),
+                            ),
+                            const SizedBox(height: 24),
+                            TextFormField(
+                              controller: _emailCtrl,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: Validators.email,
+                              decoration: const InputDecoration(
+                                labelText: 'Email адрес',
+                                prefixIcon: Icon(Icons.email_outlined, color: AppColors.primary),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _passwordCtrl,
+                              obscureText: _obscure,
+                              validator: Validators.password,
+                              onFieldSubmitted: (_) => _submit(),
+                              decoration: InputDecoration(
+                                labelText: 'Пароль',
+                                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
+                                suffixIcon: IconButton(
+                                  onPressed: () => setState(() => _obscure = !_obscure),
+                                  icon: Icon(
+                                    _obscure
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: textSecondary,
                                   ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(child: Divider(color: Colors.grey.shade300)),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text('или', style: TextStyle(color: Colors.grey.shade600)),
+                                ),
+                              ),
                             ),
-                            Expanded(child: Divider(color: Colors.grey.shade300)),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Spacer(),
+                                TextButton(
+                                  onPressed: _resetPassword,
+                                  child: const Text(
+                                    'Забыли пароль?',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            PressScaleButton(
+                              onTap: loading ? null : _submit,
+                              child: Container(
+                                width: double.infinity,
+                                height: 52,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  gradient: const LinearGradient(
+                                    colors: [AppColors.primary, AppColors.primaryLight],
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: loading
+                                    ? const SizedBox(
+                                        width: 22,
+                                        height: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Войти',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Expanded(child: Divider(color: textSecondary.withOpacity(0.25))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: Text('или', style: TextStyle(color: textSecondary)),
+                                ),
+                                Expanded(child: Divider(color: textSecondary.withOpacity(0.25))),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton(
+                                onPressed: loading
+                                    ? null
+                                    : () => Navigator.of(context).pushNamed(AppRoutes.register),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: AppColors.primary, width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Создать аккаунт',
+                                  style: TextStyle(fontSize: 16, color: AppColors.primary),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            if (kDebugMode)
+                              Center(
+                                child: TextButton(
+                                  onPressed: loading ? null : _loginAsDeveloper,
+                                  child: Text(
+                                    'Войти как разработчик',
+                                    style: TextStyle(fontSize: 13, color: textSecondary),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: OutlinedButton(
-                            onPressed: loading
-                                ? null
-                                : () => Navigator.of(context).pushNamed(AppRoutes.register),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: AppColors.primary, width: 1.5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: const Text(
-                              'Создать аккаунт',
-                              style: TextStyle(fontSize: 16, color: AppColors.primary),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        if (kDebugMode)
-                          Center(
-                            child: TextButton(
-                              onPressed: loading ? null : _loginAsDeveloper,
-                              child: const Text(
-                                'Войти как разработчик',
-                                style: TextStyle(fontSize: 13, color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        SizedBox(height: MediaQuery.of(context).padding.bottom),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -308,19 +315,4 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       ),
     );
   }
-}
-
-class _BottomWaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path()..lineTo(0, size.height - 35);
-    path.quadraticBezierTo(size.width * 0.25, size.height, size.width * 0.5, size.height - 16);
-    path.quadraticBezierTo(size.width * 0.75, size.height - 35, size.width, size.height - 10);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
