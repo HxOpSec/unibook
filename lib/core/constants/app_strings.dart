@@ -154,8 +154,12 @@ abstract final class AppStrings {
   ///
   /// If [languageCode] is invalid or unsupported, the method falls back to
   /// Russian automatically.
-  static String t(String key, {String languageCode = 'ru'}) {
+  static String translate(String key, {String languageCode = 'ru'}) {
     return all[languageCode]?[key] ?? all['ru']?[key] ?? key;
+  }
+
+  static String t(String key, {String languageCode = 'ru'}) {
+    return translate(key, languageCode: languageCode);
   }
 
   static const appName = 'UniBook';

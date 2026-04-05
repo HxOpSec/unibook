@@ -3,6 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 
+/// A reusable glassmorphism surface with blur, translucent fill, border, and glow.
+///
+/// Use this for elevated UI blocks (forms, stat cards, info panels) where a
+/// frosted-glass look is desired on top of gradient/animated backgrounds.
+///
+/// - [padding]: inner spacing for [child].
+/// - [margin]: outer spacing around the glass card.
+/// - [borderRadius]: clipping and border radius; blur is clipped to this shape.
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,

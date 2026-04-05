@@ -3,6 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 
+/// Animated decorative background for glassmorphism screens.
+///
+/// Renders three blurred circles that move slowly back-and-forth using
+/// independent controllers (8s, 10s, 12s) to create a flowing purple wave feel.
+/// Colors are theme-aware to keep contrast in both dark and light modes.
+///
+/// Note: this widget uses blur filters and continuous animations, so it is best
+/// used as a full-screen background layer behind primary interactive content.
 class AnimatedBackground extends StatefulWidget {
   const AnimatedBackground({super.key});
 
