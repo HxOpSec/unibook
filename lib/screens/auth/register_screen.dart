@@ -230,6 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
+                            isExpanded: true,
                             value: _role,
                             onChanged: (v) => setState(() => _role = v ?? 'student'),
                             decoration: const InputDecoration(
@@ -238,9 +239,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   Icon(Icons.badge_outlined, color: AppColors.primary),
                             ),
                             items: const [
-                              DropdownMenuItem(value: 'student', child: Text('Студент')),
-                              DropdownMenuItem(value: 'teacher', child: Text('Учитель')),
-                              DropdownMenuItem(value: 'admin', child: Text('Мудири кафедра')),
+                              DropdownMenuItem(
+                                value: 'student',
+                                child: Text('Студент', overflow: TextOverflow.ellipsis, maxLines: 1),
+                              ),
+                              DropdownMenuItem(
+                                value: 'teacher',
+                                child: Text('Учитель', overflow: TextOverflow.ellipsis, maxLines: 1),
+                              ),
+                              DropdownMenuItem(
+                                value: 'admin',
+                                child: Text('Мудири кафедра', overflow: TextOverflow.ellipsis, maxLines: 1),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 12),

@@ -28,6 +28,11 @@ void main() async {
   } catch (e) {
     debugPrint('Seed error: $e');
   }
+  try {
+    await seedDemoBooks();
+  } catch (e) {
+    debugPrint('Demo books seed error: $e');
+  }
   runApp(const UniBookApp());
 }
 
@@ -72,4 +77,76 @@ Future<void> seedDepartments() async {
   }
   await batch.commit();
   debugPrint('✅ Seeded 24 departments');
+}
+
+/// Seeds 3 demo books idempotently — runs only when none of the demo documents
+/// exist yet. Safe to call on every startup.
+Future<void> seedDemoBooks() async {
+  final firestore = FirebaseFirestore.instance;
+  const demoIds = ['demo_book_001', 'demo_book_002', 'demo_book_003'];
+
+  // Check whether the first demo book already exists; if so, skip seeding.
+  final existing = await firestore.collection('books').doc(demoIds.first).get();
+  if (existing.exists) return;
+
+  final now = Timestamp.now();
+  final demoBooks = [
+    {
+      'id': 'demo_book_001',
+      'title': 'Основы финансового анализа',
+      'author': 'Иванов А.Н.',
+      'year': 2022,
+      'subject': 'Финансовый анализ',
+      'departmentId': 'dept_fin_economics',
+      'uploadedBy': 'demo_admin',
+      'uploaderName': 'Администратор (демо)',
+      'fileUrl':
+          'https://www.w3.org/WAI/WCAG21/Techniques/pdf/sample-pdf-files/bookmarks.pdf',
+      'publicId': 'unibook/books/demo_book_001',
+      'coverUrl': null,
+      'downloadCount': 0,
+      'createdAt': now,
+    },
+    {
+      'id': 'demo_book_002',
+      'title': 'Цифровая экономика: теория и практика',
+      'author': 'Рахимов Б.С.',
+      'year': 2023,
+      'subject': 'Цифровая экономика',
+      'departmentId': 'dept_digital',
+      'uploadedBy': 'demo_admin',
+      'uploaderName': 'Администратор (демо)',
+      'fileUrl':
+          'https://www.w3.org/WAI/WCAG21/Techniques/pdf/sample-pdf-files/bookmarks.pdf',
+      'publicId': 'unibook/books/demo_book_002',
+      'coverUrl': null,
+      'downloadCount': 0,
+      'createdAt': now,
+    },
+    {
+      'id': 'demo_book_003',
+      'title': 'Бухгалтерский учёт в организации',
+      'author': 'Назаров Ш.Т.',
+      'year': 2021,
+      'subject': 'Бухгалтерский учёт',
+      'departmentId': 'dept_accounting',
+      'uploadedBy': 'demo_admin',
+      'uploaderName': 'Администратор (демо)',
+      'fileUrl':
+          'https://www.w3.org/WAI/WCAG21/Techniques/pdf/sample-pdf-files/bookmarks.pdf',
+      'publicId': 'unibook/books/demo_book_003',
+      'coverUrl': null,
+      'downloadCount': 0,
+      'createdAt': now,
+    },
+  ];
+
+  final batch = firestore.batch();
+  for (final book in demoBooks) {
+    final id = book['id'] as String;
+    final data = Map<String, dynamic>.from(book)..remove('id');
+    batch.set(firestore.collection('books').doc(id), data);
+  }
+  await batch.commit();
+  debugPrint('✅ Seeded 3 demo books');
 }
