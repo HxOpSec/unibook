@@ -16,7 +16,13 @@ Future<void> main() async {
 
   final shouldSeed = kDebugMode &&
       const bool.fromEnvironment('ENABLE_FIREBASE_SEED', defaultValue: false);
-  unawaited(seedFirebaseDemoData(enabled: shouldSeed));
+  Future<void>.microtask(() async {
+    try {
+      await seedFirebaseDemoData(enabled: shouldSeed);
+    } catch (e, st) {
+      debugPrint('Deferred seed failed: $e\n$st');
+    }
+  });
 }
 
 Future<void> _safeInitFirebase() async {
