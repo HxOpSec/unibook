@@ -78,19 +78,30 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
     }
 
     final uploader = context.read<AuthProvider>().user;
-    if (uploader == null) return;
+    if (uploader == null) {
+      showError(context, 'Требуется авторизация');
+      return;
+    }
+
+    int year;
+    try {
+      year = int.parse(_yearCtrl.text);
+    } catch (_) {
+      showError(context, 'Некорректный год издания');
+      return;
+    }
 
     final ok = await context.read<UploadProvider>().uploadBook(
-          uploader: uploader,
-          pdf: _pdf!,
-          title: _titleCtrl.text,
-          author: _authorCtrl.text,
-          year: int.parse(_yearCtrl.text),
-          subject: _subjectCtrl.text,
-          departmentId: _departmentId!,
-          cover: _cover,
-          uploadPreset: 'unibook_upload',
-        );
+      uploader: uploader,
+      pdf: _pdf!,
+      title: _titleCtrl.text,
+      author: _authorCtrl.text,
+      year: year,
+      subject: _subjectCtrl.text,
+      departmentId: _departmentId!,
+      cover: _cover,
+      uploadPreset: 'unibook_upload',
+    );
 
     if (!mounted) return;
     if (!ok) {

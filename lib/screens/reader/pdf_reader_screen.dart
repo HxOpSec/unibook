@@ -31,13 +31,17 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
   int _totalPages = 1;
   bool _showControls = true;
   bool _hasShownResume = false;
+  BookModel? _book;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_filePath == null && _cancelToken == null) {
-      final book = ModalRoute.of(context)!.settings.arguments as BookModel;
-      _download(book);
+    if (_book == null) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is BookModel) _book = args;
+    }
+    if (_book != null && _filePath == null && _cancelToken == null) {
+      _download(_book!);
     }
   }
 
@@ -105,7 +109,13 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final book = ModalRoute.of(context)!.settings.arguments as BookModel;
+    final book = _book;
+    if (book == null) {
+      return const Scaffold(
+        body: Center(child: Text('Книга не выбрана')),
+      );
+    }
+
     if (_filePath == null) {
       return Scaffold(
         body: Container(

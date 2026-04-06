@@ -50,8 +50,12 @@ class UploadProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (!_firestoreService.isAvailable) {
+        throw Exception('База данных недоступна. Проверьте Firebase настройки');
+      }
+
       if (_cloudinaryService.cloudName.trim().isEmpty) {
-        throw Exception('CLOUDINARY_CLOUD_NAME не настроена');
+        throw Exception('Cloudinary не настроен (CLOUDINARY_CLOUD_NAME)');
       }
 
       final valid = await FileUtils.isPdfSizeValid(pdf);

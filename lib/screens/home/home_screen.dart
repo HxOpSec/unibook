@@ -53,8 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
       booksProvider.loadStats();
     });
 
-    final departments = await service.getDepartments();
-    final books = await service.streamRecentBooks(limit: 12).first;
+    List<DepartmentModel> departments = const [];
+    List<BookModel> books = const [];
+    try {
+      departments = await service.getDepartments();
+      books = await service.streamRecentBooks(limit: 12).first;
+    } catch (e) {
+      debugPrint('HomeScreen load error: $e');
+    }
 
     if (!mounted) return;
 

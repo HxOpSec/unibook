@@ -61,10 +61,21 @@ class AuthProvider extends ChangeNotifier {
           notifyListeners();
         },
       );
+    }, onError: (e, st) {
+      debugPrint('AuthProvider auth stream error: $e\n$st');
+      _firebaseUser = null;
+      _user = null;
+      notifyListeners();
     });
   }
 
   Future<bool> login({required String email, required String password}) async {
+    if (!_authService.isAvailable || !_firestoreService.isAvailable) {
+      _error = 'Сервис авторизации временно недоступен';
+      notifyListeners();
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
@@ -96,6 +107,12 @@ class AuthProvider extends ChangeNotifier {
     required String departmentId,
     String? teacherCode,
   }) async {
+    if (!_authService.isAvailable || !_firestoreService.isAvailable) {
+      _error = 'Регистрация недоступна: Firebase не настроен';
+      notifyListeners();
+      return false;
+    }
+
     _setLoading(true);
     _error = null;
     try {
