@@ -44,16 +44,16 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final palette = isDark
         ? [
-            AppColors.primary.withOpacity(0.28),
-            AppColors.primaryLight.withOpacity(0.20),
-            AppColors.primaryDark.withOpacity(0.26),
-            AppColors.darkAccentDeep.withOpacity(0.24),
+            AppColors.primary.withValues(alpha: 0.28),
+            AppColors.primaryLight.withValues(alpha: 0.20),
+            AppColors.primaryDark.withValues(alpha: 0.26),
+            AppColors.darkAccentDeep.withValues(alpha: 0.24),
           ]
         : [
-            AppColors.lightAccent.withOpacity(0.18),
-            AppColors.primary.withOpacity(0.14),
-            AppColors.primaryLight.withOpacity(0.12),
-            AppColors.primaryDark.withOpacity(0.10),
+            AppColors.lightAccent.withValues(alpha: 0.18),
+            AppColors.primary.withValues(alpha: 0.14),
+            AppColors.primaryLight.withValues(alpha: 0.12),
+            AppColors.primaryDark.withValues(alpha: 0.10),
           ];
 
     return IgnorePointer(

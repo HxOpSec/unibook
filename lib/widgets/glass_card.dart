@@ -31,7 +31,7 @@ class GlassCard extends StatelessWidget {
     final effectiveRadius = borderRadius ?? radius;
     final effectiveColor = color ?? (isDark ? AppColors.darkGlassCard : AppColors.lightGlassCard);
     final effectiveBorder = borderColor ?? (isDark ? AppColors.darkGlassBorder : AppColors.lightGlassBorder);
-    final effectiveShadow = shadowColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.16);
+    final effectiveShadow = shadowColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.16);
 
     return Container(
       margin: margin,

@@ -214,8 +214,8 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                                 style: BorderStyle.solid,
                               ),
                               color: _pdf == null
-                                  ? AppColors.primary.withOpacity(0.04)
-                                  : AppColors.success.withOpacity(0.08),
+                                  ? AppColors.primary.withValues(alpha: 0.04)
+                                  : AppColors.success.withValues(alpha: 0.08),
                             ),
                             child: _pdf == null
                                 ? const Column(

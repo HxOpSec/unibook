@@ -155,7 +155,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                     const SizedBox(height: 6),
                     Text(
                       book.author,
-                      style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 14),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 14),
                     ),
                     const SizedBox(height: 32),
                     ClipRRect(

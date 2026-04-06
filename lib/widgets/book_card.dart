@@ -58,7 +58,7 @@ class BookCard extends StatelessWidget {
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
-                                colors: [deptColor, deptColor.withOpacity(0.7)],
+                                colors: [deptColor, deptColor.withValues(alpha: 0.7)],
                               ),
                             ),
                             alignment: Alignment.center,
@@ -157,7 +157,7 @@ class BookCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: outlined
             ? Border.all(
-                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ??
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.3) ??
                     const Color(0x55000000),
               )
             : null,
