@@ -43,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _loading = true);
     final service = context.read<FirestoreService>();
     final booksProvider = context.read<BooksProvider>();
+    unawaited(booksProvider.loadStats());
     final departments = await service.getDepartments();
     final books = await service.streamRecentBooks(limit: 12).first;
-    await booksProvider.loadStats();
     if (!mounted) return;
     setState(() {
       _departments = departments;

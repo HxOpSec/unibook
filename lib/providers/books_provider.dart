@@ -94,6 +94,11 @@ class BooksProvider extends ChangeNotifier {
       _booksCount = results[0];
       _usersCount = results[1];
       _departmentsCount = results[2];
+    } catch (e) {
+      debugPrint('loadStats error: $e');
+      _booksCount = 0;
+      _usersCount = 0;
+      _departmentsCount = 0;
     } finally {
       _statsLoading = false;
       notifyListeners();

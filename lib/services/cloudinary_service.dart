@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class CloudinaryUploadResult {
   const CloudinaryUploadResult({required this.secureUrl, required this.publicId});
@@ -17,7 +18,6 @@ class CloudinaryService {
 
   Future<CloudinaryUploadResult> uploadPdf({
     required File file,
-    required String uploadPreset,
     void Function(double progress)? onProgress,
   }) async {
     try {
@@ -47,8 +47,7 @@ class CloudinaryService {
         publicId: data['public_id'] as String,
       );
     } on DioException catch (e) {
-      // ignore: avoid_print
-      print('Cloudinary uploadPdf error: ${e.response?.data}');
+      debugPrint('Cloudinary uploadPdf error: ${e.response?.data}');
       rethrow;
     }
   }
