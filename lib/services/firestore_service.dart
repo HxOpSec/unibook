@@ -22,7 +22,7 @@ class FirestoreService {
   CollectionReference<Map<String, dynamic>>? get _departments =>
       _firestore?.collection('departments');
 
-  static const List<DepartmentModel> _fallbackDepartments = [
+  static final List<DepartmentModel> _fallbackDepartments = [
     DepartmentModel(
       id: 'dept_fin_economics',
       name: 'Кафедра финансовой экономики',
