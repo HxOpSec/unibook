@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ErrorBoundary extends StatefulWidget {
@@ -12,7 +13,7 @@ class ErrorBoundary extends StatefulWidget {
 }
 
 class _ErrorBoundaryState extends State<ErrorBoundary> {
-  FlutterExceptionHandler? _originalErrorHandler;
+  FlutterErrorDetailsHandler? _originalErrorHandler;
   ErrorCallback? _originalPlatformOnError;
   Object? _error;
 

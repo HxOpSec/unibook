@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
 import 'package:unibook/core/constants/app_strings.dart';
 import 'package:unibook/core/theme/app_theme.dart';
+import 'package:unibook/models/book_model.dart';
+import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/books_provider.dart';
 import 'package:unibook/providers/settings_provider.dart';
@@ -19,6 +21,7 @@ import 'package:unibook/screens/splash/splash_screen.dart';
 import 'package:unibook/screens/teacher/my_books_screen.dart';
 import 'package:unibook/screens/teacher/upload_book_screen.dart';
 import 'package:unibook/services/firestore_service.dart';
+import 'package:unibook/widgets/error_boundary.dart';
 
 class UniBookApp extends StatelessWidget {
   const UniBookApp({super.key});
@@ -59,17 +62,19 @@ class UniBookApp extends StatelessWidget {
             data: settings.themeMode == ThemeMode.dark
                 ? AppTheme.darkTheme()
                 : AppTheme.lightTheme(),
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: settings.t('app_name'),
-              theme: AppTheme.lightTheme(),
-              darkTheme: AppTheme.darkTheme(),
-              themeMode: settings.themeMode,
-              home: const SplashScreen(),
-              onGenerateRoute: (route) {
-                final page = _resolvePage(route.name);
-                return _fadeScale(page, route);
-              },
+            child: ErrorBoundary(
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: settings.t('app_name'),
+                theme: AppTheme.lightTheme(),
+                darkTheme: AppTheme.darkTheme(),
+                themeMode: settings.themeMode,
+                home: const SplashScreen(),
+                onGenerateRoute: (route) {
+                  final page = _resolvePage(route.name, route.arguments);
+                  return _fadeScale(page, route);
+                },
+              ),
             ),
           );
         },
@@ -77,16 +82,22 @@ class UniBookApp extends StatelessWidget {
     );
   }
 
-  Widget _resolvePage(String? name) {
+  Widget _resolvePage(String? name, Object? arguments) {
     switch (name) {
       case AppRoutes.login:
         return const LoginScreen();
       case AppRoutes.home:
         return const HomeScreen();
       case AppRoutes.bookList:
-        return const BookListScreen();
+        if (arguments is DepartmentModel) {
+          return const BookListScreen();
+        }
+        return _invalidRoutePage();
       case AppRoutes.reader:
-        return const PdfReaderScreen();
+        if (arguments is BookModel) {
+          return const PdfReaderScreen();
+        }
+        return _invalidRoutePage();
       case AppRoutes.uploadBook:
         return const UploadBookScreen();
       case AppRoutes.myBooks:
@@ -103,6 +114,20 @@ class UniBookApp extends StatelessWidget {
       default:
         return const SplashScreen();
     }
+  }
+
+  Widget _invalidRoutePage() {
+    return const Scaffold(
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Не удалось открыть экран: отсутствуют или некорректны данные маршрута.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 
   static PageRouteBuilder<dynamic> _fadeScale(

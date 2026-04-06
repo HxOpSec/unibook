@@ -49,8 +49,17 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
     _cancelToken = CancelToken();
     final path = '${Directory.systemTemp.path}/unibook_${book.id}.pdf';
     try {
+      final fileUrl = book.fileUrl.trim();
+      if (fileUrl.isEmpty) {
+        throw Exception('URL файла отсутствует');
+      }
+      final uri = Uri.tryParse(fileUrl);
+      if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
+        throw Exception('Некорректная ссылка на файл');
+      }
+
       await _dio.download(
-        book.fileUrl,
+        fileUrl,
         path,
         cancelToken: _cancelToken,
         onReceiveProgress: (received, total) {
@@ -64,22 +73,24 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       if (!mounted) return;
       setState(() {
         _filePath = path;
-        _page = savedPage;
+        _page = savedPage < 1 ? 1 : savedPage;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _pdfController.jumpToPage(savedPage);
+        _pdfController.jumpToPage(_page);
         _resetHideTimer();
-        if (savedPage > 1 && !_hasShownResume) {
+        if (_page > 1 && !_hasShownResume) {
           _hasShownResume = true;
-          showSuccess(context, 'Продолжаем с страницы $savedPage');
+          showSuccess(context, 'Продолжаем с страницы $_page');
         }
       });
     } catch (e) {
       if (!mounted) return;
       debugPrint('PDF download error: $e');
       showError(context, 'Не удалось загрузить PDF файл');
-      Navigator.of(context).maybePop();
+      setState(() {
+        _filePath = '';
+      });
     }
   }
 
@@ -116,7 +127,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       );
     }
 
-    if (_filePath == null) {
+    final filePath = _filePath;
+    if (filePath == null) {
       return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
@@ -180,6 +192,47 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       );
     }
 
+    if (filePath.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                const SizedBox(height: 12),
+                const Text(
+                  'Не удалось открыть книгу',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Проверьте подключение к интернету или попробуйте позже.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      _filePath = null;
+                      _downloadProgress = 0;
+                    });
+                    _download(book);
+                  },
+                  child: const Text('Повторить'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: GestureDetector(
         onTap: _toggleControls,
@@ -187,7 +240,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
           children: [
             Positioned.fill(
               child: SfPdfViewer.file(
-                File(_filePath!),
+                File(filePath),
                 controller: _pdfController,
                 onDocumentLoaded: (details) {
                   setState(() => _totalPages = details.document.pages.count);
