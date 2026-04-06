@@ -125,7 +125,7 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return UserModel.fromMap(doc.id, doc.data()!);
     }).handleError((Object e, StackTrace st) {
-      debugPrint('streamUser error: $e');
+      debugPrint('streamUser error: $e\n$st');
     });
   }
 
@@ -162,7 +162,7 @@ class FirestoreService {
               .map((doc) => UserModel.fromMap(doc.id, doc.data()))
               .toList(),
         ).handleError((Object e, StackTrace st) {
-          debugPrint('streamUsers error: $e');
+          debugPrint('streamUsers error: $e\n$st');
         });
   }
 
@@ -176,7 +176,7 @@ class FirestoreService {
               .map((doc) => DepartmentModel.fromMap(doc.id, doc.data()))
               .toList(),
         ).handleError((Object e, StackTrace st) {
-          debugPrint('streamDepartments error: $e');
+          debugPrint('streamDepartments error: $e\n$st');
         });
   }
 
@@ -253,7 +253,7 @@ class FirestoreService {
               .map((doc) => BookModel.fromMap(doc.id, doc.data()))
               .toList(),
         ).handleError((Object e, StackTrace st) {
-      debugPrint('streamBooksByDepartment error: $e');
+      debugPrint('streamBooksByDepartment error: $e\n$st');
     });
   }
 
@@ -273,7 +273,7 @@ class FirestoreService {
               .map((doc) => BookModel.fromMap(doc.id, doc.data()))
               .toList(),
         ).handleError((Object e, StackTrace st) {
-      debugPrint('streamRecentBooks error: $e');
+      debugPrint('streamRecentBooks error: $e\n$st');
     });
   }
 
@@ -289,7 +289,7 @@ class FirestoreService {
               .map((doc) => BookModel.fromMap(doc.id, doc.data()))
               .toList(),
         ).handleError((Object e, StackTrace st) {
-      debugPrint('streamBooksByUploader error: $e');
+      debugPrint('streamBooksByUploader error: $e\n$st');
     });
   }
 

@@ -62,7 +62,7 @@ class AuthProvider extends ChangeNotifier {
         },
       );
     }, onError: (e, st) {
-      debugPrint('AuthProvider auth stream error: $e');
+      debugPrint('AuthProvider auth stream error: $e\n$st');
       _firebaseUser = null;
       _user = null;
       notifyListeners();
