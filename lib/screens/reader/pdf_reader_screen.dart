@@ -127,7 +127,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       );
     }
 
-    if (_filePath == null) {
+    final filePath = _filePath;
+    if (filePath == null) {
       return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
@@ -191,7 +192,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       );
     }
 
-    if (_filePath!.isEmpty) {
+    if (filePath.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -239,7 +240,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
           children: [
             Positioned.fill(
               child: SfPdfViewer.file(
-                File(_filePath!),
+                File(filePath),
                 controller: _pdfController,
                 onDocumentLoaded: (details) {
                   setState(() => _totalPages = details.document.pages.count);

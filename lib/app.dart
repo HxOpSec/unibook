@@ -89,12 +89,12 @@ class UniBookApp extends StatelessWidget {
       case AppRoutes.home:
         return const HomeScreen();
       case AppRoutes.bookList:
-        if (arguments == null || arguments is DepartmentModel) {
+        if (arguments is DepartmentModel) {
           return const BookListScreen();
         }
         return const SplashScreen();
       case AppRoutes.reader:
-        if (arguments == null || arguments is BookModel) {
+        if (arguments is BookModel) {
           return const PdfReaderScreen();
         }
         return const SplashScreen();
