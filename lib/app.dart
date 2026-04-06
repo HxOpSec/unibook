@@ -92,12 +92,12 @@ class UniBookApp extends StatelessWidget {
         if (arguments is DepartmentModel) {
           return const BookListScreen();
         }
-        return const SplashScreen();
+        return _invalidRoutePage();
       case AppRoutes.reader:
         if (arguments is BookModel) {
           return const PdfReaderScreen();
         }
-        return const SplashScreen();
+        return _invalidRoutePage();
       case AppRoutes.uploadBook:
         return const UploadBookScreen();
       case AppRoutes.myBooks:
@@ -114,6 +114,20 @@ class UniBookApp extends StatelessWidget {
       default:
         return const SplashScreen();
     }
+  }
+
+  Widget _invalidRoutePage() {
+    return const Scaffold(
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Не удалось открыть экран: отсутствуют или некорректны данные маршрута.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 
   static PageRouteBuilder<dynamic> _fadeScale(
