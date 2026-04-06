@@ -79,9 +79,9 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
         if (!mounted) return;
         _pdfController.jumpToPage(_page);
         _resetHideTimer();
-        if (savedPage > 1 && !_hasShownResume) {
+        if (_page > 1 && !_hasShownResume) {
           _hasShownResume = true;
-          showSuccess(context, 'Продолжаем с страницы $savedPage');
+          showSuccess(context, 'Продолжаем с страницы $_page');
         }
       });
     } catch (e) {
