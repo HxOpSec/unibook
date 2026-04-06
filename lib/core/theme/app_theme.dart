@@ -65,7 +65,7 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? AppColors.darkInputBg : Colors.white.withOpacity(0.36),
+        fillColor: isDark ? AppColors.darkInputBg : Colors.white.withValues(alpha: 0.36),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         hintStyle: TextStyle(
           color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
@@ -87,7 +87,7 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor:
-            isDark ? AppColors.darkBackgroundMid.withOpacity(0.88) : AppColors.lightAccent,
+            isDark ? AppColors.darkBackgroundMid.withValues(alpha: 0.88) : AppColors.lightAccent,
         contentTextStyle: const TextStyle(color: Colors.white),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

@@ -13,7 +13,7 @@ class ErrorBoundary extends StatefulWidget {
 }
 
 class _ErrorBoundaryState extends State<ErrorBoundary> {
-  FlutterErrorDetailsHandler? _originalErrorHandler;
+  FlutterExceptionHandler? _originalErrorHandler;
   ErrorCallback? _originalPlatformOnError;
   Object? _error;
 

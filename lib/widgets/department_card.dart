@@ -37,7 +37,7 @@ class DepartmentCard extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [color, color.withOpacity(0.7)],
+                        colors: [color, color.withValues(alpha: 0.7)],
                       ),
                     ),
                     child: Icon(department.iconData, color: Colors.white, size: 20),
@@ -46,7 +46,7 @@ class DepartmentCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.20),
+                      color: color.withValues(alpha: 0.20),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(

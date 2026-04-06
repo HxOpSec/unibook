@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unibook/core/constants/app_routes.dart';
-import 'package:unibook/core/constants/app_strings.dart';
 import 'package:unibook/core/theme/app_theme.dart';
 import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';

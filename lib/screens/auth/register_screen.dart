@@ -211,7 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   : (_passwordStrength >= 0.66
                                       ? Colors.orange
                                       : AppColors.error),
-                              backgroundColor: textSecondary.withOpacity(0.35),
+                              backgroundColor: textSecondary.withValues(alpha: 0.35),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -240,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             isExpanded: true,
-                            value: _role,
+                            initialValue: _role,
                             onChanged: (v) => setState(() => _role = v ?? 'student'),
                             decoration: const InputDecoration(
                               labelText: 'Роль',

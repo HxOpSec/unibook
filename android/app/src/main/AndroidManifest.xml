@@ -27,6 +27,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Workaround: disable Impeller/Vulkan backend on devices whose Mali GPU
+             drivers cause a "Could not prepare isolate" engine crash at startup.
+             Track: https://github.com/flutter/flutter/issues – re-enable once
+             the device GPU driver is updated or Flutter engine fixes the crash. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
     </application>
     <queries>
         <intent>

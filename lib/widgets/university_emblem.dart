@@ -37,7 +37,7 @@ class _TgfeuLogoPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       radius,
-      Paint()..color = AppColors.gold.withOpacity(0.2),
+      Paint()..color = AppColors.gold.withValues(alpha: 0.2),
     );
 
     canvas.drawCircle(

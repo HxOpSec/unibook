@@ -94,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                             shadows: [
                               Shadow(
                                 blurRadius: 24,
-                                color: AppColors.primary.withOpacity(0.55),
+                                color: AppColors.primary.withValues(alpha: 0.55),
                               ),
                             ],
                           ),
