@@ -237,11 +237,19 @@ class _BookListScreenState extends State<BookListScreen> {
               const Text('Предмет', style: TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
               DropdownButtonFormField<String?>(
+                isExpanded: true,
                 value: provider.subjectFilter,
                 items: [
-                  const DropdownMenuItem<String?>(value: null, child: Text('Все')),
-                  ...provider.subjects
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e))),
+                  const DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text('Все', overflow: TextOverflow.ellipsis, maxLines: 1),
+                  ),
+                  ...provider.subjects.map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e, overflow: TextOverflow.ellipsis, maxLines: 1),
+                    ),
+                  ),
                 ],
                 onChanged: (value) => provider.setSubject(value),
               ),

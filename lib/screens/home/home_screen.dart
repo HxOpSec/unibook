@@ -36,7 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    unawaited(_load());
+    // Defer loading until after the first frame so that Provider.notifyListeners()
+    // inside loadStats() does not fire during the widget build phase, which would
+    // cause a "setState() called during build" error.
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_load()));
   }
 
   Future<void> _load() async {
