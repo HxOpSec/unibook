@@ -22,6 +22,7 @@ class _BookListScreenState extends State<BookListScreen> {
   bool _initialized = false;
   final _searchCtrl = TextEditingController();
   final Set<String> _favorites = <String>{};
+  DepartmentModel? _department;
 
   @override
   void dispose() {
@@ -33,15 +34,25 @@ class _BookListScreenState extends State<BookListScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_initialized) return;
-    final dept = ModalRoute.of(context)!.settings.arguments as DepartmentModel;
-    context.read<BooksProvider>().subscribeDepartment(dept.id);
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is DepartmentModel) {
+      _department = args;
+      context.read<BooksProvider>().subscribeDepartment(args.id);
+    }
     _initialized = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    final dept = ModalRoute.of(context)!.settings.arguments as DepartmentModel;
+    final dept = _department;
     final provider = context.watch<BooksProvider>();
+
+    if (dept == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Кафедра')),
+        body: const Center(child: Text('Кафедра не выбрана')),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

@@ -267,6 +267,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             value: _departmentId,
                             hint: const Text('Выберите кафедру'),
                             onChanged: (v) => setState(() => _departmentId = v),
+                            validator: Validators.requiredField,
                             decoration: const InputDecoration(
                               labelText: 'Кафедра',
                               prefixIcon: Icon(Icons.school_outlined, color: AppColors.primary),

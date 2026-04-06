@@ -1,18 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class AuthService {
   AuthService({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+      : _firebaseAuth = (Firebase.apps.isNotEmpty)
+            ? (firebaseAuth ?? FirebaseAuth.instance)
+            : null;
 
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth? _firebaseAuth;
 
-  Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
+  bool get isAvailable => _firebaseAuth != null;
 
-  User? get currentUser => _firebaseAuth.currentUser;
+  Stream<User?> authStateChanges() {
+    final auth = _firebaseAuth;
+    if (auth == null) return const Stream<User?>.empty();
+    return auth.authStateChanges();
+  }
+
+  User? get currentUser => _firebaseAuth?.currentUser;
 
   Future<UserCredential> register(String email, String password) async {
+    final auth = _firebaseAuth;
+    if (auth == null) {
+      throw Exception('Firebase Auth не настроен');
+    }
     try {
-      return await _firebaseAuth.createUserWithEmailAndPassword(
+      return await auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
@@ -24,8 +37,12 @@ class AuthService {
   }
 
   Future<UserCredential> login(String email, String password) async {
+    final auth = _firebaseAuth;
+    if (auth == null) {
+      throw Exception('Firebase Auth не настроен');
+    }
     try {
-      return await _firebaseAuth.signInWithEmailAndPassword(
+      return await auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
@@ -37,12 +54,18 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    await _firebaseAuth.signOut();
+    final auth = _firebaseAuth;
+    if (auth == null) return;
+    await auth.signOut();
   }
 
   Future<void> resetPassword(String email) async {
+    final auth = _firebaseAuth;
+    if (auth == null) {
+      throw Exception('Firebase Auth не настроен');
+    }
     try {
-      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+      await auth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
         throw Exception('Нет подключения к интернету');
