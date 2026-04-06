@@ -31,13 +31,21 @@ class UniBookApp extends StatelessWidget {
           create: (_) => FirestoreService(),
         ),
         ChangeNotifierProvider(
-          create: (context) => AuthProvider(null, context.read<FirestoreService>()),
+          create: (context) => AuthProvider(
+            null,
+            context.read<FirestoreService>(),
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => BooksProvider(context.read<FirestoreService>()),
+          create: (context) => BooksProvider(
+            context.read<FirestoreService>(),
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => UploadProvider(null, context.read<FirestoreService>()),
+          create: (context) => UploadProvider(
+            null,
+            context.read<FirestoreService>(),
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => SettingsProvider(),
@@ -53,7 +61,7 @@ class UniBookApp extends StatelessWidget {
                 : AppTheme.lightTheme(),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: AppStrings.get('app_name', settings.language),
+              title: settings.t('app_name'),
               theme: AppTheme.lightTheme(),
               darkTheme: AppTheme.darkTheme(),
               themeMode: settings.themeMode,
@@ -97,7 +105,10 @@ class UniBookApp extends StatelessWidget {
     }
   }
 
-  static PageRouteBuilder<dynamic> _fadeScale(Widget page, RouteSettings settings) {
+  static PageRouteBuilder<dynamic> _fadeScale(
+    Widget page,
+    RouteSettings settings,
+  ) {
     return PageRouteBuilder(
       settings: settings,
       transitionDuration: const Duration(milliseconds: 320),

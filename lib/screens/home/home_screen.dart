@@ -43,13 +43,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
     setState(() => _loading = true);
+
     final service = context.read<FirestoreService>();
     final booksProvider = context.read<BooksProvider>();
-    unawaited(booksProvider.loadStats());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      booksProvider.loadStats();
+    });
+
     final departments = await service.getDepartments();
     final books = await service.streamRecentBooks(limit: 12).first;
+
     if (!mounted) return;
+
     setState(() {
       _departments = departments;
       _departmentById = {for (final d in departments) d.id: d};
@@ -71,8 +79,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final booksProvider = context.watch<BooksProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final gradient = isDark
-        ? const [AppColors.darkBackgroundStart, AppColors.darkBackgroundMid, AppColors.darkBackgroundEnd]
-        : const [AppColors.lightBackgroundStart, AppColors.lightBackgroundMid, AppColors.lightBackgroundEnd];
+        ? const [
+            AppColors.darkBackgroundStart,
+            AppColors.darkBackgroundMid,
+            AppColors.darkBackgroundEnd,
+          ]
+        : const [
+            AppColors.lightBackgroundStart,
+            AppColors.lightBackgroundMid,
+            AppColors.lightBackgroundEnd,
+          ];
 
     final q = _searchCtrl.text.toLowerCase().trim();
     final departments = _departments.where((d) {
@@ -81,9 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
           d.facultyName.toLowerCase().contains(q) ||
           d.code.toLowerCase().contains(q);
     }).toList();
+
     final books = _recentBooks.where((b) {
       if (q.isEmpty) return true;
-      return b.title.toLowerCase().contains(q) || b.author.toLowerCase().contains(q);
+      return b.title.toLowerCase().contains(q) ||
+          b.author.toLowerCase().contains(q);
     }).toList();
 
     return Scaffold(
@@ -282,7 +300,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     isFavorite: _favorites.contains(book.id),
                                     onFavoriteTap: () {
                                       setState(() {
-                                        if (!_favorites.add(book.id)) _favorites.remove(book.id);
+                                        if (!_favorites.add(book.id)) {
+                                          _favorites.remove(book.id);
+                                        }
                                       });
                                     },
                                     onTap: () => Navigator.of(context).pushNamed(

@@ -25,6 +25,8 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
   final _yearCtrl = TextEditingController();
   final _subjectCtrl = TextEditingController();
 
+  late final Future<List<DepartmentModel>> _departmentsFuture;
+
   File? _pdf;
   File? _cover;
   String? _departmentId;
@@ -36,6 +38,12 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
       _subjectCtrl.text.trim().isNotEmpty &&
       _departmentId != null &&
       _pdf != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _departmentsFuture = context.read<FirestoreService>().getDepartments();
+  }
 
   @override
   void dispose() {
@@ -97,6 +105,7 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
   @override
   Widget build(BuildContext context) {
     final upload = context.watch<UploadProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Добавить книгу'),
@@ -107,9 +116,10 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
         ),
       ),
       body: FutureBuilder<List<DepartmentModel>>(
-        future: context.read<FirestoreService>().getDepartments(),
+        future: _departmentsFuture,
         builder: (context, snapshot) {
           final departments = snapshot.data ?? [];
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(
@@ -157,6 +167,7 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       value: _departmentId,
+                      hint: const Text('Выберите кафедру'),
                       onChanged: (v) => setState(() => _departmentId = v),
                       validator: Validators.requiredField,
                       items: departments
@@ -202,22 +213,35 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                                       SizedBox(height: 6),
                                       Text('Выбрать PDF файл'),
                                       SizedBox(height: 2),
-                                      Text('Максимум 50 МБ',
-                                          style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                      Text(
+                                        'Максимум 50 МБ',
+                                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                                      ),
                                     ],
                                   )
                                 : Column(
                                     children: [
-                                      const Icon(Icons.check_circle,
-                                          color: AppColors.success, size: 28),
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: AppColors.success,
+                                        size: 28,
+                                      ),
                                       const SizedBox(height: 6),
-                                      Text(_pdf!.path.split('/').last, maxLines: 1),
-                                      Text('${(_pdf!.lengthSync() / 1024 / 1024).toStringAsFixed(2)} МБ'),
-                                      const Text('Изменить',
-                                          style: TextStyle(
-                                            color: AppColors.primary,
-                                            decoration: TextDecoration.underline,
-                                          )),
+                                      Text(
+                                        _pdf!.path.split('/').last,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${(_pdf!.lengthSync() / 1024 / 1024).toStringAsFixed(2)} МБ',
+                                      ),
+                                      const Text(
+                                        'Изменить',
+                                        style: TextStyle(
+                                          color: AppColors.primary,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
                                     ],
                                   ),
                           ),
@@ -228,9 +252,12 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                           child: OutlinedButton.icon(
                             onPressed: _pickCover,
                             icon: const Icon(Icons.image_outlined),
-                            label: Text(_cover == null
-                                ? 'Добавить обложку (необязательно)'
-                                : 'Обложка выбрана'),
+                            label: Text(
+                              _cover == null
+                                  ? 'Добавить обложку (необязательно)'
+                                  : 'Обложка выбрана',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                       ],

@@ -27,6 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordCtrl = TextEditingController();
   final _teacherCodeCtrl = TextEditingController();
 
+  late final Future<List<DepartmentModel>> _departmentsFuture;
+
   String _role = 'student';
   String? _departmentId;
   bool _obscurePass = true;
@@ -46,6 +48,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       score += 0.34;
     }
     return score.clamp(0, 1);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _departmentsFuture = context.read<FirestoreService>().getDepartments();
   }
 
   @override
@@ -124,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const Positioned.fill(child: AnimatedBackground()),
           SafeArea(
             child: FutureBuilder<List<DepartmentModel>>(
-              future: context.read<FirestoreService>().getDepartments(),
+              future: _departmentsFuture,
               builder: (context, snapshot) {
                 final departments = snapshot.data ?? [];
                 return SingleChildScrollView(
@@ -144,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const Spacer(),
                             ],
                           ),
-                          const TgfeuLogo(size: 72, textSize: 14),
+                          const UniversityEmblem(size: 72, textSize: 14),
                           const SizedBox(height: 12),
                           Text(
                             'Создать аккаунт',
@@ -181,13 +189,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
                               labelText: 'Пароль',
-                              prefixIcon:
-                                  const Icon(Icons.lock_outline, color: AppColors.primary),
+                              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
                               suffixIcon: IconButton(
                                 onPressed: () => setState(() => _obscurePass = !_obscurePass),
-                                icon: Icon(_obscurePass
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined),
+                                icon: Icon(
+                                  _obscurePass
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                ),
                               ),
                             ),
                           ),
@@ -217,14 +226,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                             decoration: InputDecoration(
                               labelText: 'Подтвердите пароль',
-                              prefixIcon:
-                                  const Icon(Icons.lock_outline, color: AppColors.primary),
+                              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
                               suffixIcon: IconButton(
-                                onPressed: () =>
-                                    setState(() => _obscureConfirm = !_obscureConfirm),
-                                icon: Icon(_obscureConfirm
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined),
+                                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                icon: Icon(
+                                  _obscureConfirm
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                ),
                               ),
                             ),
                           ),
@@ -235,8 +244,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onChanged: (v) => setState(() => _role = v ?? 'student'),
                             decoration: const InputDecoration(
                               labelText: 'Роль',
-                              prefixIcon:
-                                  Icon(Icons.badge_outlined, color: AppColors.primary),
+                              prefixIcon: Icon(Icons.badge_outlined, color: AppColors.primary),
                             ),
                             items: const [
                               DropdownMenuItem(
@@ -257,11 +265,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           DropdownButtonFormField<String>(
                             isExpanded: true,
                             value: _departmentId,
+                            hint: const Text('Выберите кафедру'),
                             onChanged: (v) => setState(() => _departmentId = v),
                             decoration: const InputDecoration(
                               labelText: 'Кафедра',
-                              prefixIcon:
-                                  Icon(Icons.school_outlined, color: AppColors.primary),
+                              prefixIcon: Icon(Icons.school_outlined, color: AppColors.primary),
                             ),
                             items: departments
                                 .map(
@@ -290,8 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           : null,
                                       decoration: const InputDecoration(
                                         labelText: 'Введите код учителя',
-                                        prefixIcon: Icon(Icons.vpn_key_outlined,
-                                            color: AppColors.primary),
+                                        prefixIcon: Icon(Icons.vpn_key_outlined, color: AppColors.primary),
                                       ),
                                     ),
                                   )
@@ -361,6 +368,7 @@ class _SuccessDialogState extends State<_SuccessDialog>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     )..forward();
+
     Future.delayed(const Duration(milliseconds: 900), () {
       if (mounted) Navigator.of(context).pop();
     });

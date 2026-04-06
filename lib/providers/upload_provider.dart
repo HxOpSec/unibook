@@ -8,9 +8,16 @@ import 'package:unibook/services/cloudinary_service.dart';
 import 'package:unibook/services/firestore_service.dart';
 
 class UploadProvider extends ChangeNotifier {
-  UploadProvider([CloudinaryService? cloudinaryService, FirestoreService? firestoreService])
-      : _cloudinaryService =
-            cloudinaryService ?? CloudinaryService(cloudName: const String.fromEnvironment('CLOUDINARY_CLOUD_NAME', defaultValue: '')),
+  UploadProvider([
+    CloudinaryService? cloudinaryService,
+    FirestoreService? firestoreService,
+  ])  : _cloudinaryService = cloudinaryService ??
+          CloudinaryService(
+            cloudName: const String.fromEnvironment(
+              'CLOUDINARY_CLOUD_NAME',
+              defaultValue: '',
+            ),
+          ),
         _firestoreService = firestoreService ?? FirestoreService();
 
   final CloudinaryService _cloudinaryService;
@@ -35,6 +42,8 @@ class UploadProvider extends ChangeNotifier {
     File? cover,
     required String uploadPreset,
   }) async {
+    if (_isUploading) return false;
+
     _isUploading = true;
     _progress = 0;
     _error = null;
@@ -42,9 +51,7 @@ class UploadProvider extends ChangeNotifier {
 
     try {
       if (_cloudinaryService.cloudName.trim().isEmpty) {
-        throw Exception(
-          'Переменная CLOUDINARY_CLOUD_NAME не настроена',
-        );
+        throw Exception('CLOUDINARY_CLOUD_NAME не настроена');
       }
 
       final valid = await FileUtils.isPdfSizeValid(pdf);
@@ -55,7 +62,7 @@ class UploadProvider extends ChangeNotifier {
       final upload = await _cloudinaryService.uploadPdf(
         file: pdf,
         onProgress: (value) {
-          _progress = value * 0.9;
+          _progress = (value * 0.9).clamp(0.0, 0.9);
           notifyListeners();
         },
       );
@@ -86,11 +93,13 @@ class UploadProvider extends ChangeNotifier {
       );
 
       await _firestoreService.addBook(book);
+
       _progress = 1;
       notifyListeners();
       return true;
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
+      debugPrint('UploadProvider.uploadBook error: $_error');
       return false;
     } finally {
       _isUploading = false;

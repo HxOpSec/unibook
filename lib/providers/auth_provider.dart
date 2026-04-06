@@ -20,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
   StreamSubscription<User?>? _authSub;
   StreamSubscription<UserModel?>? _profileSub;
 
+  bool _initialized = false;
   bool _isLoading = false;
   String? _error;
   User? _firebaseUser;
@@ -34,19 +35,32 @@ class AuthProvider extends ChangeNotifier {
   bool get isAdminOrTeacher => _user?.isAdmin == true || _user?.isTeacher == true;
 
   void initialize() {
+    if (_initialized) return;
+    _initialized = true;
+
     _authSub?.cancel();
     _authSub = _authService.authStateChanges().listen((firebaseUser) {
       _firebaseUser = firebaseUser;
       _profileSub?.cancel();
+      _profileSub = null;
+
       if (firebaseUser == null) {
         _user = null;
         notifyListeners();
         return;
       }
-      _profileSub = _firestoreService.streamUser(firebaseUser.uid).listen((profile) {
-        _user = profile;
-        notifyListeners();
-      });
+
+      _profileSub = _firestoreService.streamUser(firebaseUser.uid).listen(
+        (profile) {
+          _user = profile;
+          notifyListeners();
+        },
+        onError: (e, st) {
+          debugPrint('AuthProvider profile stream error: $e');
+          _user = null;
+          notifyListeners();
+        },
+      );
     });
   }
 

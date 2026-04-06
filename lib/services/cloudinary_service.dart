@@ -38,13 +38,20 @@ class CloudinaryService {
       );
 
       final data = response.data;
-      if (data == null || data['secure_url'] == null || data['public_id'] == null) {
-        throw Exception('Ошибка загрузки. Попробуйте снова');
+      if (data == null) {
+        throw Exception('Cloudinary upload failed: empty response');
+      }
+
+      final secureUrl = data['secure_url'] as String?;
+      final publicId = data['public_id'] as String?;
+
+      if (secureUrl == null || secureUrl.isEmpty || publicId == null || publicId.isEmpty) {
+        throw Exception('Cloudinary upload failed: invalid response data');
       }
 
       return CloudinaryUploadResult(
-        secureUrl: data['secure_url'] as String,
-        publicId: data['public_id'] as String,
+        secureUrl: secureUrl,
+        publicId: publicId,
       );
     } on DioException catch (e) {
       debugPrint('Cloudinary uploadPdf error: ${e.response?.data}');
@@ -56,22 +63,28 @@ class CloudinaryService {
     required File file,
     required String uploadPreset,
   }) async {
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path),
-      'upload_preset': uploadPreset,
-      'folder': 'unibook/covers',
-    });
+    try {
+      final fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(file.path, filename: fileName),
+        'upload_preset': uploadPreset,
+        'folder': 'unibook/covers',
+      });
 
-    final response = await _dio.post<Map<String, dynamic>>(
-      'https://api.cloudinary.com/v1_1/$cloudName/image/upload',
-      data: formData,
-    );
+      final response = await _dio.post<Map<String, dynamic>>(
+        'https://api.cloudinary.com/v1_1/$cloudName/image/upload',
+        data: formData,
+      );
 
-    final secureUrl = response.data?['secure_url'] as String?;
-    if (secureUrl == null || secureUrl.isEmpty) {
-      throw Exception('Ошибка загрузки. Попробуйте снова');
+      final secureUrl = response.data?['secure_url'] as String?;
+      if (secureUrl == null || secureUrl.isEmpty) {
+        throw Exception('Cloudinary cover upload failed: missing secure_url');
+      }
+      return secureUrl;
+    } on DioException catch (e) {
+      debugPrint('Cloudinary uploadCover error: ${e.response?.data}');
+      rethrow;
     }
-    return secureUrl;
   }
 
   Future<void> deleteRawByPublicId({

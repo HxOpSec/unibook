@@ -90,7 +90,10 @@ class FirestoreService {
     required String name,
     required String code,
   }) async {
-    await _departments.doc(id).update({'name': name.trim(), 'code': code.trim()});
+    await _departments.doc(id).update({
+      'name': name.trim(),
+      'code': code.trim(),
+    });
   }
 
   Future<void> deleteDepartment(String id) async {
@@ -134,14 +137,24 @@ class FirestoreService {
   }
 
   Future<void> addBook(BookModel book) async {
-    await _books.add(book.toMap());
+    final docRef = book.id.isNotEmpty ? _books.doc(book.id) : _books.doc();
+    final bookId = docRef.id;
+
+    await docRef.set({
+      ...book.toMap(),
+      'id': bookId,
+    });
+
     await _departments.doc(book.departmentId).update({
       'bookCount': FieldValue.increment(1),
     });
   }
 
   Future<void> deleteBook(BookModel book) async {
-    await _books.doc(book.id).delete();
+    if (book.id.isNotEmpty) {
+      await _books.doc(book.id).delete();
+    }
+
     await _departments.doc(book.departmentId).update({
       'bookCount': FieldValue.increment(-1),
     });
@@ -153,7 +166,9 @@ class FirestoreService {
 
   Future<String> getTeacherCode() async {
     final doc = await _firestore.collection('settings').doc('app_settings').get();
-    return (doc.data()?['teacherCode'] ?? '') as String;
+    final data = doc.data();
+    if (data == null) return '';
+    return (data['teacherCode'] as String?) ?? '';
   }
 
   Future<void> setTeacherCode(String code) async {

@@ -29,7 +29,8 @@ class BooksProvider extends ChangeNotifier {
       final queryMatches = q.isEmpty ||
           book.title.toLowerCase().contains(q) ||
           book.author.toLowerCase().contains(q);
-      final subjectMatches = _subjectFilter == null || book.subject == _subjectFilter;
+      final subjectMatches =
+          _subjectFilter == null || book.subject == _subjectFilter;
       return queryMatches && subjectMatches;
     }).toList();
 
@@ -59,12 +60,21 @@ class BooksProvider extends ChangeNotifier {
   void subscribeDepartment(String departmentId) {
     _loading = true;
     notifyListeners();
+
     _sub?.cancel();
-    _sub = _firestoreService.streamBooksByDepartment(departmentId).listen((items) {
-      _books = items;
-      _loading = false;
-      notifyListeners();
-    });
+    _sub = _firestoreService.streamBooksByDepartment(departmentId).listen(
+      (items) {
+        _books = items;
+        _loading = false;
+        notifyListeners();
+      },
+      onError: (e, st) {
+        debugPrint('subscribeDepartment error: $e');
+        _books = [];
+        _loading = false;
+        notifyListeners();
+      },
+    );
   }
 
   void setQuery(String value) {
@@ -83,14 +93,18 @@ class BooksProvider extends ChangeNotifier {
   }
 
   Future<void> loadStats() async {
+    if (_statsLoading) return;
+
     _statsLoading = true;
     notifyListeners();
+
     try {
       final results = await Future.wait<int>([
         _firestoreService.getBooksCount(),
         _firestoreService.getUsersCount(),
         _firestoreService.getDepartmentsCount(),
       ]);
+
       _booksCount = results[0];
       _usersCount = results[1];
       _departmentsCount = results[2];
