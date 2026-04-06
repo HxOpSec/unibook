@@ -33,13 +33,8 @@ void main() async {
 
 Future<void> seedDepartments() async {
   final firestore = FirebaseFirestore.instance;
-  final snapshot = await firestore.collection('departments').get();
-  if (snapshot.docs.length >= 20) return;
-  final deleteBatch = firestore.batch();
-  for (final doc in snapshot.docs) {
-    deleteBatch.delete(doc.reference);
-  }
-  await deleteBatch.commit();
+  final snapshot = await firestore.collection('departments').limit(1).get();
+  if (snapshot.docs.isNotEmpty) return;
   final departments = [
     {'id':'dept_world_economy','name':'Кафедра мировой экономики','code':'ME','facultyName':'Факультет МЭО','building':'Корпус 1','room':'201','icon':'public','colorHex':'#1565C0'},
     {'id':'dept_customs','name':'Кафедра таможенной деятельности','code':'TAM','facultyName':'Факультет таможни','building':'Корпус 2','room':'105','icon':'security','colorHex':'#4A148C'},

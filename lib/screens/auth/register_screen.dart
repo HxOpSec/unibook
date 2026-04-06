@@ -245,6 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
+                            isExpanded: true,
                             value: _departmentId,
                             onChanged: (v) => setState(() => _departmentId = v),
                             decoration: const InputDecoration(
@@ -258,6 +259,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     value: d.id,
                                     child: Text(
                                       d.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(color: textPrimary),
                                     ),
                                   ),

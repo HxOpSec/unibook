@@ -163,15 +163,30 @@ class FirestoreService {
     );
   }
 
+  Future<int> getBooksCount() async {
+    final snap = await _books.count().get();
+    return snap.count ?? 0;
+  }
+
+  Future<int> getUsersCount() async {
+    final snap = await _users.count().get();
+    return snap.count ?? 0;
+  }
+
+  Future<int> getDepartmentsCount() async {
+    final snap = await _departments.count().get();
+    return snap.count ?? 0;
+  }
+
   Future<Map<String, int>> getStats() async {
-    final booksSnapshot = await _firestore.collection('books').count().get();
-    final usersSnapshot = await _firestore.collection('users').count().get();
-    final departmentsSnapshot = await _firestore.collection('departments').count().get();
+    final booksCount = await getBooksCount();
+    final usersCount = await getUsersCount();
+    final departmentsCount = await getDepartmentsCount();
 
     return {
-      'books': booksSnapshot.count ?? 0,
-      'users': usersSnapshot.count ?? 0,
-      'departments': departmentsSnapshot.count ?? 0,
+      'books': booksCount,
+      'users': usersCount,
+      'departments': departmentsCount,
     };
   }
 }

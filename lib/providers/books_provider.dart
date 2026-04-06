@@ -18,6 +18,10 @@ class BooksProvider extends ChangeNotifier {
   String? _subjectFilter;
   BookSort _sort = BookSort.byDate;
   bool _loading = false;
+  bool _statsLoading = false;
+  int _booksCount = 0;
+  int _usersCount = 0;
+  int _departmentsCount = 0;
 
   List<BookModel> get books {
     var filtered = _books.where((book) {
@@ -40,6 +44,10 @@ class BooksProvider extends ChangeNotifier {
   }
 
   bool get loading => _loading;
+  bool get statsLoading => _statsLoading;
+  int get booksCount => _booksCount;
+  int get usersCount => _usersCount;
+  int get departmentsCount => _departmentsCount;
   String get query => _query;
   String? get subjectFilter => _subjectFilter;
   BookSort get sort => _sort;
@@ -72,6 +80,24 @@ class BooksProvider extends ChangeNotifier {
   void setSort(BookSort value) {
     _sort = value;
     notifyListeners();
+  }
+
+  Future<void> loadStats() async {
+    _statsLoading = true;
+    notifyListeners();
+    try {
+      final results = await Future.wait<int>([
+        _firestoreService.getBooksCount(),
+        _firestoreService.getUsersCount(),
+        _firestoreService.getDepartmentsCount(),
+      ]);
+      _booksCount = results[0];
+      _usersCount = results[1];
+      _departmentsCount = results[2];
+    } finally {
+      _statsLoading = false;
+      notifyListeners();
+    }
   }
 
   @override

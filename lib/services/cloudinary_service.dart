@@ -20,30 +20,37 @@ class CloudinaryService {
     required String uploadPreset,
     void Function(double progress)? onProgress,
   }) async {
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path),
-      'upload_preset': uploadPreset,
-      'folder': 'unibook/books',
-    });
+    try {
+      final fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(file.path, filename: fileName),
+        'upload_preset': 'unibook_upload',
+        'folder': 'unibook/books',
+      });
 
-    final response = await _dio.post<Map<String, dynamic>>(
-      'https://api.cloudinary.com/v1_1/$cloudName/raw/upload',
-      data: formData,
-      onSendProgress: (sent, total) {
-        if (total <= 0) return;
-        onProgress?.call(sent / total);
-      },
-    );
+      final response = await _dio.post<Map<String, dynamic>>(
+        'https://api.cloudinary.com/v1_1/$cloudName/raw/upload',
+        data: formData,
+        onSendProgress: (sent, total) {
+          if (total <= 0) return;
+          onProgress?.call(sent / total);
+        },
+      );
 
-    final data = response.data;
-    if (data == null || data['secure_url'] == null || data['public_id'] == null) {
-      throw Exception('Ошибка загрузки. Попробуйте снова');
+      final data = response.data;
+      if (data == null || data['secure_url'] == null || data['public_id'] == null) {
+        throw Exception('Ошибка загрузки. Попробуйте снова');
+      }
+
+      return CloudinaryUploadResult(
+        secureUrl: data['secure_url'] as String,
+        publicId: data['public_id'] as String,
+      );
+    } on DioException catch (e) {
+      // ignore: avoid_print
+      print('Cloudinary uploadPdf error: ${e.response?.data}');
+      rethrow;
     }
-
-    return CloudinaryUploadResult(
-      secureUrl: data['secure_url'] as String,
-      publicId: data['public_id'] as String,
-    );
   }
 
   Future<String> uploadCover({
