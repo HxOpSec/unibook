@@ -7,6 +7,7 @@ import 'package:unibook/core/constants/app_routes.dart';
 import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
+import 'package:unibook/providers/books_provider.dart';
 import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/animated_background.dart';
@@ -41,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     final service = context.read<FirestoreService>();
+    final booksProvider = context.read<BooksProvider>();
+    unawaited(booksProvider.loadStats());
     final departments = await service.getDepartments();
     final books = await service.streamRecentBooks(limit: 12).first;
     if (!mounted) return;
@@ -62,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
     final auth = context.watch<AuthProvider>();
+    final booksProvider = context.watch<BooksProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final gradient = isDark
         ? const [AppColors.darkBackgroundStart, AppColors.darkBackgroundMid, AppColors.darkBackgroundEnd]
@@ -195,6 +199,38 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
+                        GlassCard(
+                          child: booksProvider.statsLoading
+                              ? const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Center(child: CircularProgressIndicator()),
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      child: _StatItem(
+                                        label: settings.t('books'),
+                                        value: booksProvider.booksCount,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _StatItem(
+                                        label: settings.t('users'),
+                                        value: booksProvider.usersCount,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _StatItem(
+                                        label: settings.t('departments'),
+                                        value: booksProvider.departmentsCount,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                        const SizedBox(height: 16),
                         Text(
                           settings.t('departments'),
                           style: Theme.of(context).textTheme.titleLarge,
@@ -279,6 +315,31 @@ class _EmptyGlass extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  const _StatItem({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value.toString(),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
     );
   }
 }

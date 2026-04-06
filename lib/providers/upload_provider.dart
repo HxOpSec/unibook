@@ -54,7 +54,6 @@ class UploadProvider extends ChangeNotifier {
 
       final upload = await _cloudinaryService.uploadPdf(
         file: pdf,
-        uploadPreset: uploadPreset,
         onProgress: (value) {
           _progress = value * 0.9;
           notifyListeners();

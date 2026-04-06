@@ -155,6 +155,7 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                   _SectionCard(
                     title: 'Кафедра',
                     child: DropdownButtonFormField<String>(
+                      isExpanded: true,
                       value: _departmentId,
                       onChanged: (v) => setState(() => _departmentId = v),
                       validator: Validators.requiredField,
@@ -162,7 +163,11 @@ class _UploadBookScreenState extends State<UploadBookScreen> {
                           .map(
                             (d) => DropdownMenuItem(
                               value: d.id,
-                              child: Text('${d.name} — ${d.facultyName}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                '${d.name} — ${d.facultyName}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
