@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:unibook/core/constants/app_colors.dart';
@@ -14,15 +16,22 @@ class ConnectionStatusBanner extends StatefulWidget {
 
 class _ConnectionStatusBannerState extends State<ConnectionStatusBanner> {
   bool _isOnline = true;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   @override
   void initState() {
     super.initState();
-    Connectivity().onConnectivityChanged.listen((results) {
+    _subscription = Connectivity().onConnectivityChanged.listen((results) {
       if (!mounted) return;
       final online = results.any((r) => r != ConnectivityResult.none);
       setState(() => _isOnline = online);
     });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   @override

@@ -21,7 +21,11 @@ extension StringExtensions on String {
 
 /// Convenience extensions on [DateTime].
 extension DateTimeExtensions on DateTime {
-  /// Returns a short relative time string (e.g. "2д", "3ч", "just now").
+  /// Returns a short relative time string in Russian (e.g. "2д", "3ч", "только что").
+  ///
+  /// Note: This intentionally uses Russian abbreviations to match the default
+  /// app locale. Use the settings provider's `t()` method for fully-localised
+  /// output in production screens.
   String get timeAgo {
     final diff = DateTime.now().difference(this);
     if (diff.inDays > 365) return '${(diff.inDays / 365).floor()}г';

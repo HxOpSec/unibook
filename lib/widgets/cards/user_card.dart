@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unibook/core/constants/app_colors.dart';
+import 'package:unibook/core/utils/helpers.dart';
 import 'package:unibook/models/user_model.dart';
 
 /// A card displaying a user's profile summary (used in admin views).
@@ -78,15 +79,11 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = name.trim().isEmpty
-        ? '?'
-        : name.trim().split(' ').map((p) => p.isNotEmpty ? p[0] : '').take(2).join().toUpperCase();
-
     return CircleAvatar(
       radius: 24,
       backgroundColor: AppColors.primary.withValues(alpha: 0.15),
       child: Text(
-        initials,
+        getInitials(name),
         style: const TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,

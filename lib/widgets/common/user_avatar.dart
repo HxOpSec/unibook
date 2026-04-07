@@ -29,8 +29,6 @@ class UserAvatar extends StatelessWidget {
         backgroundImage: NetworkImage(imageUrl!),
         backgroundColor:
             AppColors.primary.withValues(alpha: 0.12),
-        onBackgroundImageError: (_, __) {},
-        child: null,
       );
     }
 
