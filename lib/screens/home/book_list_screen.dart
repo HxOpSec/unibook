@@ -153,7 +153,7 @@ class _BookListScreenState extends State<BookListScreen> {
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     itemCount: 6,
-                    itemBuilder: (_, __) => const ShimmerLoader(
+                    itemBuilder: (_, _) => const ShimmerLoader(
                       child: Card(
                         child: SizedBox(height: 116),
                       ),

@@ -136,8 +136,8 @@ class UniBookApp extends StatelessWidget {
     return PageRouteBuilder(
       settings: settings,
       transitionDuration: const Duration(milliseconds: 320),
-      pageBuilder: (_, __, ___) => page,
-      transitionsBuilder: (_, animation, __, child) {
+      pageBuilder: (_, _, _) => page,
+      transitionsBuilder: (_, animation, _, child) {
         final curved = CurvedAnimation(
           parent: animation,
           curve: Curves.easeOutCubic,

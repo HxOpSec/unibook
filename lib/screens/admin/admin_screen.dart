@@ -114,6 +114,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     ),
                   );
                   if (code == null || code.trim().isEmpty) return;
+                  if (!context.mounted) return;
                   await context.read<FirestoreService>().setTeacherCode(code);
                   if (context.mounted) showSuccess(context, 'Код учителя обновлён');
                 },

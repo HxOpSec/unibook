@@ -69,6 +69,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       );
       final prefs = await SharedPreferences.getInstance();
       final savedPage = prefs.getInt('last_page_${book.id}') ?? 1;
+      if (!mounted) return;
       await context.read<FirestoreService>().incrementDownloadCount(book.id);
       if (!mounted) return;
       setState(() {

@@ -76,7 +76,7 @@ class BookCard extends StatelessWidget {
                         : CachedNetworkImage(
                             imageUrl: book.coverUrl!,
                             fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) => const ColoredBox(
+                            errorWidget: (_, _, _) => const ColoredBox(
                               color: Color(0x22000000),
                               child: Center(child: Icon(Icons.broken_image_outlined)),
                             ),
