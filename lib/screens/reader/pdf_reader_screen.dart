@@ -13,6 +13,7 @@ import 'package:unibook/models/bookmark_model.dart';
 import 'package:unibook/models/note_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/bookmarks_notes_provider.dart';
+import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
@@ -297,7 +298,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                         _BookmarkButton(book: book, page: _page),
                         IconButton(
                           onPressed: () => _showAddNoteDialog(context, book),
-                          tooltip: 'Добавить заметку',
+                          tooltip: context.read<SettingsProvider>().t('addNote'),
                           icon: const Icon(Icons.note_add_outlined, color: Colors.white),
                         ),
                         const SizedBox(width: 4),
@@ -360,30 +361,35 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
   }
 
   Future<void> _showAddNoteDialog(BuildContext context, BookModel book) async {
+    final settings = context.read<SettingsProvider>();
     final controller = TextEditingController();
-    final text = await showDialog<String>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Заметка — стр. $_page'),
-        content: TextField(
-          controller: controller,
-          maxLines: 4,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'Введите заметку...'),
+    String? text;
+    try {
+      text = await showDialog<String>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('${settings.t("addNoteForPage")} — ${settings.t("pageCut")} $_page'),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            autofocus: true,
+            decoration: InputDecoration(hintText: settings.t('addNoteHint')),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(settings.t('cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(controller.text),
+              child: Text(settings.t('save')),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Отмена'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: const Text('Добавить'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
+      );
+    } finally {
+      controller.dispose();
+    }
     if (text == null || text.trim().isEmpty || !mounted) return;
 
     final uid = context.read<AuthProvider>().firebaseUser?.uid;
@@ -400,7 +406,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
     );
     await context.read<BookmarksNotesProvider>().addNote(note);
     if (!mounted) return;
-    showSuccess(context, 'Заметка добавлена');
+    showSuccess(context, settings.t('noteAdded'));
   }
 }
 
@@ -413,11 +419,12 @@ class _BookmarkButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<BookmarksNotesProvider>();
+    final settings = context.watch<SettingsProvider>();
     final isBookmarked = provider.isPageBookmarked(book.id, page);
     final auth = context.read<AuthProvider>();
 
     return IconButton(
-      tooltip: isBookmarked ? 'Убрать закладку' : 'Добавить закладку',
+      tooltip: isBookmarked ? settings.t('removeBookmark') : settings.t('addBookmark'),
       icon: Icon(
         isBookmarked ? Icons.bookmark : Icons.bookmark_border,
         color: Colors.white,
@@ -430,7 +437,7 @@ class _BookmarkButton extends StatelessWidget {
           final bm = provider.bookmarkForPage(book.id, page);
           if (bm != null) {
             await provider.deleteBookmark(bm.id);
-            if (context.mounted) showSuccess(context, 'Закладка удалена');
+            if (context.mounted) showSuccess(context, settings.t('bookmarkRemoved'));
           }
         } else {
           final bookmark = BookmarkModel(
@@ -442,7 +449,7 @@ class _BookmarkButton extends StatelessWidget {
             createdAt: DateTime.now(),
           );
           await provider.addBookmark(bookmark);
-          if (context.mounted) showSuccess(context, 'Закладка добавлена');
+          if (context.mounted) showSuccess(context, settings.t('bookmarkAdded'));
         }
       },
     );

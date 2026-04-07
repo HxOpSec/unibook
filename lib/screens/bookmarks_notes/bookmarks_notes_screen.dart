@@ -128,11 +128,12 @@ class _BookmarksNotesScreenState extends State<BookmarksNotesScreen>
     // Navigate to reader cannot be done without the BookModel, so we show a
     // helpful message to the user to open the book from the library instead.
     if (!mounted) return;
+    final settings = context.read<SettingsProvider>();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Откройте книгу из раздела «Кафедры» или «Новые поступления»'),
+        content: Text(settings.t('openLibrary')),
         action: SnackBarAction(
-          label: 'ОК',
+          label: settings.t('cancel'),
           onPressed: () {},
         ),
       ),
@@ -140,32 +141,37 @@ class _BookmarksNotesScreenState extends State<BookmarksNotesScreen>
   }
 
   Future<void> _editNote(BuildContext context, NoteModel note) async {
+    final settings = context.read<SettingsProvider>();
     final controller = TextEditingController(text: note.text);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Редактировать заметку'),
-        content: TextField(
-          controller: controller,
-          maxLines: 5,
-          decoration: const InputDecoration(hintText: 'Текст заметки...'),
+    String? result;
+    try {
+      result = await showDialog<String>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(settings.t('editNote')),
+          content: TextField(
+            controller: controller,
+            maxLines: 5,
+            decoration: InputDecoration(hintText: settings.t('noteTextHint')),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(settings.t('cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(controller.text),
+              child: Text(settings.t('save')),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Отмена'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: const Text('Сохранить'),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      controller.dispose();
+    }
     if (result != null && result.trim().isNotEmpty && mounted) {
       await context.read<BookmarksNotesProvider>().updateNote(note.id, result);
     }
-    controller.dispose();
   }
 }
 
@@ -182,11 +188,12 @@ class _BookmarksList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>();
     if (bookmarks.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.bookmark_border,
-        title: 'Нет закладок',
-        subtitle: 'Добавляйте закладки во время чтения',
+        title: s.t('noBookmarks'),
+        subtitle: s.t('noBookmarksHint'),
       );
     }
 
@@ -204,13 +211,13 @@ class _BookmarksList extends StatelessWidget {
               child: Icon(Icons.bookmark, color: Colors.white, size: 20),
             ),
             title: Text(
-              bm.bookTitle.isNotEmpty ? bm.bookTitle : 'Книга',
+              bm.bookTitle.isNotEmpty ? bm.bookTitle : s.t('unknownBook'),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${bm.label.isNotEmpty ? "${bm.label} · " : ""}Страница ${bm.page}',
+              '${bm.label.isNotEmpty ? "${bm.label} · " : ""}${s.t("page")} ${bm.page}',
               style: const TextStyle(fontSize: 12),
             ),
             trailing: IconButton(
@@ -240,11 +247,12 @@ class _NotesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>();
     if (notes.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.note_outlined,
-        title: 'Нет заметок',
-        subtitle: 'Добавляйте заметки во время чтения',
+        title: s.t('noNotes'),
+        subtitle: s.t('noNotesHint'),
       );
     }
 
@@ -265,7 +273,7 @@ class _NotesList extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      note.bookTitle.isNotEmpty ? note.bookTitle : 'Книга',
+                      note.bookTitle.isNotEmpty ? note.bookTitle : s.t('unknownBook'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -275,7 +283,7 @@ class _NotesList extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Стр. ${note.page}',
+                    '${s.t("pageCut")} ${note.page}',
                     style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                   IconButton(

@@ -37,23 +37,30 @@ class BookmarksNotesProvider extends ChangeNotifier {
       _bookmarks.where((b) => b.bookId == bookId && b.page == page).firstOrNull;
 
   void subscribe(String userId) {
-    _loading = true;
-    _error = null;
-    notifyListeners();
-
     _bookmarksSub?.cancel();
     _notesSub?.cancel();
+    _loading = true;
+    _error = null;
+    int pending = 2; // wait for both streams to emit once
+
+    notifyListeners();
 
     _bookmarksSub = _firestoreService.streamBookmarks(userId).listen(
       (items) {
         _bookmarks = items;
-        _loading = false;
+        if (pending > 0) {
+          pending--;
+          if (pending == 0) _loading = false;
+        }
         notifyListeners();
       },
       onError: (e, st) {
         debugPrint('BookmarksNotesProvider bookmarks error: $e');
         _error = e.toString();
-        _loading = false;
+        if (pending > 0) {
+          pending--;
+          if (pending == 0) _loading = false;
+        }
         notifyListeners();
       },
     );
@@ -61,10 +68,18 @@ class BookmarksNotesProvider extends ChangeNotifier {
     _notesSub = _firestoreService.streamNotes(userId).listen(
       (items) {
         _notes = items;
+        if (pending > 0) {
+          pending--;
+          if (pending == 0) _loading = false;
+        }
         notifyListeners();
       },
       onError: (e, st) {
         debugPrint('BookmarksNotesProvider notes error: $e');
+        if (pending > 0) {
+          pending--;
+          if (pending == 0) _loading = false;
+        }
       },
     );
   }
