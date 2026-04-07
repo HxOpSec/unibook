@@ -370,9 +370,13 @@ class _SuccessDialogState extends State<_SuccessDialog>
       duration: const Duration(milliseconds: 500),
     )..forward();
 
-    Future.delayed(const Duration(milliseconds: 900), () {
-      if (mounted) Navigator.of(context).pop();
-    });
+    _scheduleAutoClose();
+  }
+
+  Future<void> _scheduleAutoClose() async {
+    await Future.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
