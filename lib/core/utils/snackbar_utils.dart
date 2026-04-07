@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unibook/core/constants/app_colors.dart';
 
 void showSuccess(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -10,7 +11,7 @@ void showSuccess(BuildContext context, String message) {
           Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
         ],
       ),
-      backgroundColor: const Color(0xFF2E7D32),
+      backgroundColor: AppColors.success,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -29,7 +30,7 @@ void showError(BuildContext context, String message) {
           Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
         ],
       ),
-      backgroundColor: const Color(0xFFD32F2F),
+      backgroundColor: AppColors.error,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
