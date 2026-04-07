@@ -18,6 +18,8 @@ import 'package:unibook/screens/home/book_list_screen.dart';
 import 'package:unibook/screens/home/home_screen.dart';
 import 'package:unibook/screens/profile/profile_screen.dart';
 import 'package:unibook/screens/reader/pdf_reader_screen.dart';
+import 'package:unibook/screens/search/search_screen.dart';
+import 'package:unibook/screens/settings/settings_screen.dart';
 import 'package:unibook/screens/splash/splash_screen.dart';
 import 'package:unibook/screens/teacher/my_books_screen.dart';
 import 'package:unibook/screens/teacher/upload_book_screen.dart';
@@ -118,6 +120,10 @@ class UniBookApp extends StatelessWidget {
         return const AdminDepartmentsScreen();
       case AppRoutes.bookmarksNotes:
         return const BookmarksNotesScreen();
+      case AppRoutes.search:
+        return const SearchScreen();
+      case AppRoutes.settings:
+        return const SettingsScreen();
       case AppRoutes.splash:
       default:
         return const SplashScreen();

@@ -11,4 +11,6 @@ abstract final class AppRoutes {
   static const adminUsers = '/admin-users';
   static const adminDepartments = '/admin-departments';
   static const bookmarksNotes = '/bookmarks-notes';
+  static const search = '/search';
+  static const settings = '/settings';
 }

@@ -129,22 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          PopupMenuButton<String>(
-            tooltip: settings.t('language'),
-            icon: const Icon(Icons.language_outlined),
-            onSelected: (value) {
-              settings.setLanguage(value);
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'ru', child: Text('Русский')),
-              PopupMenuItem(value: 'tj', child: Text('Тоҷикӣ')),
-              PopupMenuItem(value: 'en', child: Text('English')),
-            ],
+          IconButton(
+            tooltip: settings.t('search'),
+            onPressed: () => Navigator.of(context).pushNamed(AppRoutes.search),
+            icon: const Icon(Icons.search_outlined),
           ),
           IconButton(
-            tooltip: settings.t('theme'),
-            onPressed: settings.toggleTheme,
-            icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+            tooltip: settings.t('settings'),
+            onPressed: () => Navigator.of(context).pushNamed(AppRoutes.settings),
+            icon: const Icon(Icons.settings_outlined),
           ),
           IconButton(
             tooltip: settings.t('profile'),
@@ -168,10 +161,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
+                    tooltip: settings.t('home'),
+                    onPressed: () {},
+                    icon: const Icon(Icons.home_outlined),
+                  ),
+                  IconButton(
+                    tooltip: settings.t('search'),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.search),
+                    icon: const Icon(Icons.search_outlined),
+                  ),
+                  IconButton(
                     tooltip: settings.t('bookmarksAndNotes'),
                     onPressed: () =>
                         Navigator.of(context).pushNamed(AppRoutes.bookmarksNotes),
                     icon: const Icon(Icons.bookmarks_outlined),
+                  ),
+                  IconButton(
+                    tooltip: settings.t('profile'),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.profile),
+                    icon: const Icon(Icons.person_outline),
                   ),
                 ],
               ),
