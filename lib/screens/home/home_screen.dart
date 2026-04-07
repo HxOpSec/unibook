@@ -160,6 +160,23 @@ class _HomeScreenState extends State<HomeScreen> {
               label: Text(settings.t('uploadBook')),
             )
           : null,
+      bottomNavigationBar: auth.isAuthenticated
+          ? BottomAppBar(
+              height: 52,
+              padding: EdgeInsets.zero,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    tooltip: settings.t('bookmarksAndNotes'),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.bookmarksNotes),
+                    icon: const Icon(Icons.bookmarks_outlined),
+                  ),
+                ],
+              ),
+            )
+          : null,
       body: Stack(
         children: [
           Positioned.fill(

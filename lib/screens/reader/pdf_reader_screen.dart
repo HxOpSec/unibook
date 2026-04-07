@@ -9,6 +9,11 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:unibook/core/constants/app_colors.dart';
 import 'package:unibook/core/utils/snackbar_utils.dart';
 import 'package:unibook/models/book_model.dart';
+import 'package:unibook/models/bookmark_model.dart';
+import 'package:unibook/models/note_model.dart';
+import 'package:unibook/providers/auth_provider.dart';
+import 'package:unibook/providers/bookmarks_notes_provider.dart';
+import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/services/firestore_service.dart';
 import 'package:unibook/widgets/university_emblem.dart';
 
@@ -42,6 +47,11 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
     }
     if (_book != null && _filePath == null && _cancelToken == null) {
       _download(_book!);
+    }
+    // Subscribe to bookmarks/notes for the current user
+    final uid = context.read<AuthProvider>().firebaseUser?.uid;
+    if (uid != null) {
+      context.read<BookmarksNotesProvider>().subscribe(uid);
     }
   }
 
@@ -281,13 +291,17 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 14),
-                          child: Text(
-                            '$_page/$_totalPages',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                        Text(
+                          '$_page/$_totalPages',
+                          style: const TextStyle(color: Colors.white, fontSize: 13),
                         ),
+                        _BookmarkButton(book: book, page: _page),
+                        IconButton(
+                          onPressed: () => _showAddNoteDialog(context, book),
+                          tooltip: context.read<SettingsProvider>().t('addNote'),
+                          icon: const Icon(Icons.note_add_outlined, color: Colors.white),
+                        ),
+                        const SizedBox(width: 4),
                       ],
                     ),
                   ),
@@ -343,6 +357,101 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showAddNoteDialog(BuildContext context, BookModel book) async {
+    final settings = context.read<SettingsProvider>();
+    final controller = TextEditingController();
+    String? text;
+    try {
+      text = await showDialog<String>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('${settings.t("addNoteForPage")} — ${settings.t("pageCut")} $_page'),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            autofocus: true,
+            decoration: InputDecoration(hintText: settings.t('addNoteHint')),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(settings.t('cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(controller.text),
+              child: Text(settings.t('save')),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      controller.dispose();
+    }
+    if (text == null || text.trim().isEmpty || !mounted) return;
+
+    final uid = context.read<AuthProvider>().firebaseUser?.uid;
+    if (uid == null) return;
+
+    final note = NoteModel(
+      id: '',
+      userId: uid,
+      bookId: book.id,
+      bookTitle: book.title,
+      page: _page,
+      text: text.trim(),
+      createdAt: DateTime.now(),
+    );
+    await context.read<BookmarksNotesProvider>().addNote(note);
+    if (!mounted) return;
+    showSuccess(context, settings.t('noteAdded'));
+  }
+}
+
+class _BookmarkButton extends StatelessWidget {
+  const _BookmarkButton({required this.book, required this.page});
+
+  final BookModel book;
+  final int page;
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<BookmarksNotesProvider>();
+    final settings = context.watch<SettingsProvider>();
+    final isBookmarked = provider.isPageBookmarked(book.id, page);
+    final auth = context.read<AuthProvider>();
+
+    return IconButton(
+      tooltip: isBookmarked ? settings.t('removeBookmark') : settings.t('addBookmark'),
+      icon: Icon(
+        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+        color: Colors.white,
+      ),
+      onPressed: () async {
+        final uid = auth.firebaseUser?.uid;
+        if (uid == null) return;
+
+        if (isBookmarked) {
+          final bm = provider.bookmarkForPage(book.id, page);
+          if (bm != null) {
+            await provider.deleteBookmark(bm.id);
+            if (context.mounted) showSuccess(context, settings.t('bookmarkRemoved'));
+          }
+        } else {
+          final bookmark = BookmarkModel(
+            id: '',
+            userId: uid,
+            bookId: book.id,
+            bookTitle: book.title,
+            page: page,
+            createdAt: DateTime.now(),
+          );
+          await provider.addBookmark(bookmark);
+          if (context.mounted) showSuccess(context, settings.t('bookmarkAdded'));
+        }
+      },
     );
   }
 }
