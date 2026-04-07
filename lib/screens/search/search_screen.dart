@@ -88,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
       final service = context.read<FirestoreService>();
       final lower = q.toLowerCase();
 
-      final allBooks = await service.streamRecentBooks(limit: 200).first;
+      final allBooks = await service.streamRecentBooks(limit: 100).first;
       final allDepts = await service.getDepartments();
 
       final books = allBooks.where((b) {

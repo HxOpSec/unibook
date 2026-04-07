@@ -6,6 +6,8 @@ import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/widgets/animated_background.dart';
 import 'package:unibook/widgets/glass_card.dart';
 
+// Keep this in sync with pubspec.yaml version field.
+// For production, use package_info_plus to read this dynamically.
 const String _appVersion = '1.0.0';
 
 class SettingsScreen extends StatelessWidget {

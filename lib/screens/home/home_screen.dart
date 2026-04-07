@@ -162,8 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                     tooltip: settings.t('home'),
-                    onPressed: () {},
-                    icon: const Icon(Icons.home_outlined),
+                    onPressed: () => Navigator.of(context)
+                        .pushNamedAndRemoveUntil(AppRoutes.home, (_) => false),
+                    icon: const Icon(Icons.home),
                   ),
                   IconButton(
                     tooltip: settings.t('search'),
