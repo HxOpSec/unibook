@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:unibook/models/book_model.dart';
+import 'package:unibook/models/bookmark_model.dart';
 import 'package:unibook/models/department_model.dart';
+import 'package:unibook/models/note_model.dart';
 import 'package:unibook/models/user_model.dart';
 
 class FirestoreService {
@@ -21,6 +23,10 @@ class FirestoreService {
       _firestore?.collection('books');
   CollectionReference<Map<String, dynamic>>? get _departments =>
       _firestore?.collection('departments');
+  CollectionReference<Map<String, dynamic>>? get _bookmarks =>
+      _firestore?.collection('bookmarks');
+  CollectionReference<Map<String, dynamic>>? get _notes =>
+      _firestore?.collection('notes');
 
   static final List<DepartmentModel> _fallbackDepartments = [
     DepartmentModel(
@@ -400,5 +406,113 @@ class FirestoreService {
       'users': usersCount,
       'departments': departmentsCount,
     };
+  }
+
+  // ── Bookmarks ──────────────────────────────────────────────────────────────
+
+  Stream<List<BookmarkModel>> streamBookmarks(String userId) {
+    final bookmarks = _bookmarks;
+    if (bookmarks == null) return Stream.value(const []);
+    return bookmarks
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => BookmarkModel.fromMap(doc.id, doc.data()))
+              .toList(),
+        )
+        .handleError((Object e, StackTrace st) {
+      debugPrint('streamBookmarks error: $e\n$st');
+    });
+  }
+
+  Stream<List<BookmarkModel>> streamBookBookmarks(String userId, String bookId) {
+    final bookmarks = _bookmarks;
+    if (bookmarks == null) return Stream.value(const []);
+    return bookmarks
+        .where('userId', isEqualTo: userId)
+        .where('bookId', isEqualTo: bookId)
+        .orderBy('page')
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => BookmarkModel.fromMap(doc.id, doc.data()))
+              .toList(),
+        )
+        .handleError((Object e, StackTrace st) {
+      debugPrint('streamBookBookmarks error: $e\n$st');
+    });
+  }
+
+  Future<void> addBookmark(BookmarkModel bookmark) async {
+    final bookmarks = _bookmarks;
+    if (bookmarks == null) return;
+    final docRef = bookmark.id.isNotEmpty
+        ? bookmarks.doc(bookmark.id)
+        : bookmarks.doc();
+    await docRef.set({...bookmark.toMap(), 'id': docRef.id});
+  }
+
+  Future<void> deleteBookmark(String bookmarkId) async {
+    final bookmarks = _bookmarks;
+    if (bookmarks == null) return;
+    await bookmarks.doc(bookmarkId).delete();
+  }
+
+  // ── Notes ──────────────────────────────────────────────────────────────────
+
+  Stream<List<NoteModel>> streamNotes(String userId) {
+    final notes = _notes;
+    if (notes == null) return Stream.value(const []);
+    return notes
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NoteModel.fromMap(doc.id, doc.data()))
+              .toList(),
+        )
+        .handleError((Object e, StackTrace st) {
+      debugPrint('streamNotes error: $e\n$st');
+    });
+  }
+
+  Stream<List<NoteModel>> streamBookNotes(String userId, String bookId) {
+    final notes = _notes;
+    if (notes == null) return Stream.value(const []);
+    return notes
+        .where('userId', isEqualTo: userId)
+        .where('bookId', isEqualTo: bookId)
+        .orderBy('page')
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NoteModel.fromMap(doc.id, doc.data()))
+              .toList(),
+        )
+        .handleError((Object e, StackTrace st) {
+      debugPrint('streamBookNotes error: $e\n$st');
+    });
+  }
+
+  Future<void> addNote(NoteModel note) async {
+    final notes = _notes;
+    if (notes == null) return;
+    final docRef = note.id.isNotEmpty ? notes.doc(note.id) : notes.doc();
+    await docRef.set({...note.toMap(), 'id': docRef.id});
+  }
+
+  Future<void> updateNote(String noteId, String text) async {
+    final notes = _notes;
+    if (notes == null) return;
+    await notes.doc(noteId).update({'text': text.trim()});
+  }
+
+  Future<void> deleteNote(String noteId) async {
+    final notes = _notes;
+    if (notes == null) return;
+    await notes.doc(noteId).delete();
   }
 }

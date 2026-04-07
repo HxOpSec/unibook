@@ -6,12 +6,14 @@ import 'package:unibook/models/book_model.dart';
 import 'package:unibook/models/department_model.dart';
 import 'package:unibook/providers/auth_provider.dart';
 import 'package:unibook/providers/books_provider.dart';
+import 'package:unibook/providers/bookmarks_notes_provider.dart';
 import 'package:unibook/providers/settings_provider.dart';
 import 'package:unibook/providers/upload_provider.dart';
 import 'package:unibook/screens/admin/admin_departments_screen.dart';
 import 'package:unibook/screens/admin/admin_screen.dart';
 import 'package:unibook/screens/admin/admin_users_screen.dart';
 import 'package:unibook/screens/auth/login_screen.dart';
+import 'package:unibook/screens/bookmarks_notes/bookmarks_notes_screen.dart';
 import 'package:unibook/screens/home/book_list_screen.dart';
 import 'package:unibook/screens/home/home_screen.dart';
 import 'package:unibook/screens/profile/profile_screen.dart';
@@ -46,6 +48,11 @@ class UniBookApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UploadProvider(
             null,
+            context.read<FirestoreService>(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BookmarksNotesProvider(
             context.read<FirestoreService>(),
           ),
         ),
@@ -109,6 +116,8 @@ class UniBookApp extends StatelessWidget {
         return const AdminUsersScreen();
       case AppRoutes.adminDepartments:
         return const AdminDepartmentsScreen();
+      case AppRoutes.bookmarksNotes:
+        return const BookmarksNotesScreen();
       case AppRoutes.splash:
       default:
         return const SplashScreen();
