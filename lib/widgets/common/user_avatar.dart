@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unibook/core/constants/app_colors.dart';
+import 'package:unibook/core/utils/helpers.dart';
 
 /// A circular avatar that shows the user's initials as a fallback
 /// when no image URL is available.
@@ -14,12 +15,6 @@ class UserAvatar extends StatelessWidget {
   final String name;
   final String? imageUrl;
   final double radius;
-
-  String get _initials {
-    final parts = name.trim().split(' ');
-    final chars = parts.map((p) => p.isNotEmpty ? p[0] : '').take(2).join();
-    return chars.isEmpty ? '?' : chars.toUpperCase();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +31,7 @@ class UserAvatar extends StatelessWidget {
       radius: radius,
       backgroundColor: AppColors.primary.withValues(alpha: 0.15),
       child: Text(
-        _initials,
+        getInitials(name),
         style: TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
