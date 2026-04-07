@@ -7,10 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.unibook"
-    // Pin to API 35 / target 34 as a temporary workaround for the
-    // "Could not prepare isolate" engine crash that occurs on Android 16
-    // (API 36) devices until the Flutter engine adds full API-36 support.
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
